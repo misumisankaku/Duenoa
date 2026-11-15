@@ -1304,8 +1304,56 @@ el('#cancel').addEventListener('click',()=>{if(S.phase==='mulligan'){S.mulliganS
 function cpuTargetCandidates(card){const buff=(card.atkChange||0)>0||(card.hpChange||0)>0;return (buff?S.cpuBoard:S.youBoard).filter(u=>card.targetRule==='any'||card.targetRule==='enemyCreature'||!u.frozen);}
 function cpuTargetPriority(card,target){const buff=(card.atkChange||0)>0||(card.hpChange||0)>0;if(buff)return target.atk*1.1+target.hp*.35+(target.haste?1:0)+(target.guard?1:0);if(card.destroy)return 9+target.atk*.55+target.hp*.2+(target.guard?2:0);let score=(card.damage||0)*.55;if(card.damage&&target.hp<=card.damage)score+=5+target.atk*.65+(target.guard?1.5:0);if(card.freeze)score+=target.atk*.7;return score;}
 function cpuCardScore(card){let score=card.cost*.2;if(card.kind==='creature'){score+=(card.atk||0)*.9+(card.hp||0)*.45+(card.guard?2:0)+(card.haste?1.5:0);score+=(card.summonDraw||0)*2.5;if(card.summonHeal)score+=Math.min(card.summonHeal,Math.max(0,20-S.cpuLife))*.9;if(card.summonPlayerDamage)score+=card.summonPlayerDamage*1.4+(S.youLife<=card.summonPlayerDamage?12:0);if(card.summonOpponentDamage)score+=card.summonOpponentDamage*1.1+(S.youLife<=card.summonOpponentDamage?10:0);if(card.summonAreaDamage)score+=Math.min(4,S.youBoard.length)*card.summonAreaDamage*1.2;if(card.summonExistingAtk)score+=Math.min(4,Math.max(0,S.cpuBoard.length))*card.summonExistingAtk*.8;if(card.summonAlliedAtk||card.summonAlliedHp)score+=Math.min(4,S.cpuBoard.length+1)*((card.summonAlliedAtk||0)+(card.summonAlliedHp||0))*.65;if(card.targetRule){const targets=cpuTargetCandidates(card);score+=targets.length?Math.max(...targets.map(u=>cpuTargetPriority(card,u)))*.7:(card.targetRule==='any'?2:-8);}const selfCost=card.selfDamageOnSummon||0;score-=selfCost*(S.cpuLife<=7?2.5:1);}else{score+=(card.draw||0)*2.4;if(card.heal)score+=Math.min(card.heal,Math.max(0,20-S.cpuLife))*1.1;if(card.directPlayerDamage)score+=card.directPlayerDamage*1.6+(S.youLife<=card.directPlayerDamage?12:0);if(card.playerDamage)score+=card.playerDamage*1.25+(S.youLife<=card.playerDamage?10:0);if(card.targetRule){const targets=cpuTargetCandidates(card);score+=targets.length?Math.max(...targets.map(u=>cpuTargetPriority(card,u)))*.75:(card.targetRule==='any'?2:-8);}if(card.areaDamage)score+=Math.min(4,S.youBoard.length)*card.areaDamage*1.3;if(card.areaAtkChange||card.areaHpChange){const allies=card.areaTarget==='friendly'?S.cpuBoard:S.youBoard;score+=Math.min(4,allies.length)*((Math.abs(card.areaAtkChange||0)+Math.abs(card.areaHpChange||0))*.75);}score-=(card.selfDamage||0)*(S.cpuLife<=7?2.5:1);}return score;}
-function chooseCpuPlay(affordable){if(S.cpuDifficulty==='easy')return affordable[Math.floor(Math.random()*affordable.length)];if(S.cpuDifficulty==='hard')return affordable.reduce((best,card)=>cpuCardScore(card)>cpuCardScore(best)?card:best);return affordable.sort((a,b)=>b.cost-a.cost)[0];}
-function chooseCpuAttackTarget(attacker){if(S.cpuDifficulty!=='hard')return null;const guard=S.youBoard.find(u=>u.guard&&u.hp>0);let bestTarget=guard||null;let bestScore=guard?(attacker.atk>=guard.hp?4+guard.atk*.45+guard.hp*.25:0)+(attacker.hp>guard.atk?0:-2.5):attacker.atk+(S.youLife<=attacker.atk?20:0);for(const target of S.youBoard){if(target===guard)continue;const kills=attacker.atk>=target.hp,survives=attacker.hp>target.atk;const score=(kills?4+target.atk*.45+target.hp*.25:0)+(survives?0:-2.5)+(target.guard?1:0)+((target.frozen?0.5:0));if(score>bestScore){bestTarget=target;bestScore=score;}}return bestTarget&&bestTarget!==guard?bestTarget.uid:null;}
+function chooseCpuPlay(affordable){
+  if(S.cpuDifficulty==='easy')return affordable[Math.floor(Math.random()*affordable.length)];
+  const boardGap=Math.max(0,S.youBoard.length-S.cpuBoard.length);
+  const normalScore=card=>{
+    let score=cpuCardScore(card)*.65+(card.cost||0)*.35;
+    if(card.kind==='creature'){
+      score+=Math.min(2,boardGap)*1.25;
+      if(card.guard&&boardGap)score+=.8;
+    }else{
+      if(card.destroy||card.damage||card.freeze)score+=Math.min(2,cpuTargetCandidates(card).length)*.8;
+      if(card.areaDamage)score+=Math.min(3,S.youBoard.length)*.7;
+    }
+    return score;
+  };
+  const hardScore=card=>{
+    let score=cpuCardScore(card);
+    if(card.kind==='creature'){
+      score+=Math.min(4,boardGap)*2.1;
+      if(card.guard&&S.youBoard.length)score+=2;
+    }
+    const directDamage=card.directPlayerDamage||card.playerDamage||card.summonPlayerDamage||card.summonOpponentDamage||0;
+    if(directDamage>=S.youLife)score+=1000;
+    if(card.areaDamage&&S.youBoard.length>=2)score+=Math.min(4,S.youBoard.length)*1.5;
+    return score;
+  };
+  const score=S.cpuDifficulty==='hard'?hardScore:normalScore;
+  return affordable.reduce((best,card)=>score(card)>score(best)?card:best);
+}
+function cpuMaterialValue(unit){return (unit.cost||0)*.65+(unit.atk||0)*.7+(unit.hp||0)*.45+(unit.guard?2.5:0)+(unit.haste?1:0);}
+function chooseCpuAttackTarget(attacker){
+  if(S.cpuDifficulty==='easy')return null;
+  const guard=S.youBoard.find(u=>u.guard&&u.hp>0);
+  const faceScore=attacker.atk*.55+(S.youLife<=attacker.atk?1000:0);
+  let bestTarget=guard||null,bestScore=faceScore;
+  for(const target of S.youBoard){
+    const kills=attacker.atk>=target.hp,survives=attacker.hp>target.atk;
+    let score;
+    if(S.cpuDifficulty==='hard'){
+      const targetValue=cpuMaterialValue(target),attackerValue=cpuMaterialValue(attacker);
+      score=(kills?targetValue*1.2:targetValue*.12)+(survives?2:-attackerValue*.8);
+      if(target.guard)score+=1.5;
+      if(target.frozen)score+=.5;
+      if(!kills)score-=1;
+    }else{
+      score=kills&&survives?3+target.cost*.5+target.atk*.25+target.hp*.2+(target.guard?1.5:0):-Infinity;
+    }
+    if(score>bestScore){bestTarget=target;bestScore=score;}
+  }
+  return bestTarget&&bestTarget!==guard?bestTarget.uid:null;
+}
 function cpuAttackPhase(){const attackers=S.cpuBoard.filter(canAct),totalPower=attackers.reduce((sum,u)=>sum+u.atk,0),guardHealth=S.youBoard.filter(u=>u.guard&&u.hp>0).reduce((sum,u)=>sum+u.hp,0),forceLethal=S.cpuDifficulty!=='easy'&&totalPower>=S.youLife+guardHealth;for(const a of attackers){if(S.ended)break;if(!S.cpuBoard.includes(a)||!canAct(a))continue;const targetUid=forceLethal?null:chooseCpuAttackTarget(a);if(targetUid){const target=S.youBoard.find(u=>u.uid===targetUid);if(!target)continue;target.hp-=a.atk;a.hp-=target.atk;a.tapped=true;if(a.haste)a.hasteWindSpent=true;const result=(target.hp<=0?' '+target.name+'を撃破！':'')+(a.hp<=0?' '+a.name+'も倒れた！':'');recordBattle('⚔️ CPUの'+a.name+' → '+S.youName+'の'+target.name+'：'+target.name+'に'+a.atk+'、'+a.name+'に'+target.atk+'ダメージ。'+result,a.uid,target.uid,'cpu','you');S.youBoard=S.youBoard.filter(u=>u.hp>0);S.cpuBoard=S.cpuBoard.filter(u=>u.hp>0);}else{const guard=S.youBoard.find(u=>u.guard&&u.hp>0);if(guard){guard.hp-=a.atk;a.hp-=guard.atk;a.tapped=true;if(a.haste)a.hasteWindSpent=true;S.youBoard=S.youBoard.filter(u=>u.hp>0);S.cpuBoard=S.cpuBoard.filter(u=>u.hp>0);recordBattle('⚔️ CPUの'+a.name+' → '+S.youName+'の守護「'+guard.name+'」：'+guard.name+'に'+a.atk+'、'+a.name+'に'+guard.atk+'ダメージ。'+(guard.hp<=0?' '+guard.name+'を撃破！':'')+(a.hp<=0?' '+a.name+'も倒れた！':''),a.uid,guard.uid,'cpu','you');}else{S.youLife-=a.atk;a.tapped=true;if(a.haste)a.hasteWindSpent=true;recordBattle('⚔️ CPUの'+a.name+' → '+S.youName+'のライフ：'+a.atk+'ダメージ。',a.uid,null,'cpu','you');}}finishIfNeeded();}}
 function cpuPlay(){let affordable=S.cpuHand.filter(c=>c.cost<=S.cpuMana&&!(c.heal&&S.cpuLife>17));while(affordable.length&&!S.ended){const play=chooseCpuPlay(affordable);let targetSide=null,targetUid=null,targetPlayerSide=null;if(play.targetRule==='any'){const candidates=cpuTargetCandidates(play),lethalToPlayer=S.youLife<=(play.damage||0),choosePlayer=lethalToPlayer||!candidates.length||(S.cpuDifficulty==='easy'&&Math.random()<.5);if(choosePlayer)targetPlayerSide='you';else{targetSide='you';targetUid=S.cpuDifficulty==='hard'?candidates.reduce((best,u)=>cpuTargetPriority(play,u)>cpuTargetPriority(play,best)?u:best).uid:candidates[0].uid;}}else if(play.targetRule){const buff=(play.atkChange||0)>0||(play.hpChange||0)>0;const candidates=cpuTargetCandidates(play);if(!candidates.length){if(play.kind==='creature'&&!cardRequiresTarget(play,'cpu')){targetSide=null;targetUid=null;}else{affordable=affordable.filter(c=>c.uid!==play.uid);continue;}}else{targetSide=buff?'cpu':'you';targetUid=S.cpuDifficulty==='hard'?candidates.reduce((best,u)=>cpuTargetPriority(play,u)>cpuTargetPriority(play,best)?u:best).uid:candidates[0].uid;}}const message=resolveCard(play,'cpu',targetSide,targetUid,targetPlayerSide);if(!message){affordable=affordable.filter(c=>c.uid!==play.uid);continue;}S.cpuMana-=play.cost;S.cpuHand=S.cpuHand.filter(c=>c.uid!==play.uid);S.log=message;recordAction(S.log,play.kind==='spell'?'spell':'summon');finishIfNeeded();affordable=S.cpuHand.filter(c=>c.cost<=S.cpuMana&&!(c.heal&&S.cpuLife>17));}}
 function cpuTurn(isOpening=false){if(S.ended||S.phase!=='cpu')return;S.phase='cpu';S.selected=null;S.attackUid=null;S.attackTargetUid=null;S.attackTargetFace=false;S.history=[];S.lastAttack=null;recordAction('CPUのターン開始。','turn');if(isOpening)S.cpuStarted=true;else if(!S.cpuStarted)S.cpuStarted=true;S.cpuTurnCount++;S.cpuMax=manaMaxForTurn('cpu',S.cpuTurnCount);S.cpuMana=S.cpuMax;playTurnCue();const cpuDraw=drawCards('cpu',1);if(!cpuDraw.failed)recordAction('CPUはカードを1枚ドロー。','draw');S.cpuBoard.forEach(u=>{u.tapped=false;u.fresh=false;u.hp=u.maxHp;});S.youBoard.forEach(u=>{u.hp=u.maxHp;u.frozen=false;});if(!S.ended)cpuPlay();if(!isOpening&&!S.ended)cpuAttackPhase();S.cpuBoard.forEach(u=>{u.hp=u.maxHp;u.frozen=false;});S.youBoard.forEach(u=>{u.hp=u.maxHp;});if(!S.ended){S.youBoard.forEach(u=>{u.tapped=false;u.fresh=false;});S.phase='you';if(isOpening){S.turn=1;S.youStarted=true;}else{S.turn++;S.youStarted=true;}S.youTurnCount++;S.youMax=manaMaxForTurn('you',S.youTurnCount);S.youMana=S.youMax;const playerDraw=drawCards('you',1);if(!playerDraw.failed){recordAction('あなたはカードを1枚ドロー。','draw');S.log=isOpening?'CPUが先攻。あなたは後攻で2マナからスタート！カードを1枚引きました。':'あなたの'+S.turn+'ターン目。カードを1枚引きました。';}playTurnCue();startTurnTimer();}finishIfNeeded();render();animateLastAttack();}
