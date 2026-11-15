@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#101a2c">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="デュエノア">
@@ -1172,11 +1172,129 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
 @media(max-height:680px) and (min-width:561px) and (max-width:999px){
   #starfall-cpu #game{grid-template-rows:auto auto auto auto auto auto auto!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior-y:contain}
 }
+
+/* Phone portrait layout: compact board, readable hand, and thumb-sized controls */
+#starfall-cpu #mobile-log-toggle{display:none}
+@media(max-width:560px){
+  #starfall-cpu{padding:8px!important}
+  #starfall-cpu:has(#game:not([hidden])){overflow:hidden!important}
+  #starfall-cpu #game{
+    display:grid!important;height:100%!important;min-height:0!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto auto auto auto auto auto!important;
+    grid-template-areas:"enemy" "divider" "own" "hint" "footer" "hand" "mulligan" "log"!important;
+    gap:5px!important;align-content:start!important;overflow-x:hidden!important;overflow-y:auto!important;
+    overscroll-behavior-y:contain!important;padding:0 0 calc(10px + env(safe-area-inset-bottom))!important;
+    --battlefield-height:clamp(112px,15vh,132px)!important;
+    --hand-card-height:clamp(142px,18vh,158px)!important;
+  }
+  #starfall-cpu #game>.top{display:none!important}
+  #starfall-cpu #game>.zone.enemy{grid-area:enemy!important}
+  #starfall-cpu #game>.divider{grid-area:divider!important;min-height:20px;padding:2px 4px!important;font-size:10px!important}
+  #starfall-cpu #game>.zone:not(.enemy){grid-area:own!important}
+  #starfall-cpu #game>.hint{grid-area:hint!important;max-height:30px!important;font-size:10px!important}
+  #starfall-cpu #game>.footer{grid-area:footer!important;height:auto!important;min-height:28px!important;flex-wrap:wrap!important;gap:4px!important}
+  #starfall-cpu #game>.hand{grid-area:hand!important;justify-content:flex-start!important;gap:6px!important;padding:8px 2px 4px!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x proximity}
+  #starfall-cpu #game>.hand .card{
+    flex:0 0 clamp(102px,28vw,116px)!important;width:clamp(102px,28vw,116px)!important;
+    height:var(--hand-card-height)!important;min-height:var(--hand-card-height)!important;max-height:var(--hand-card-height)!important;
+    padding:5px!important;gap:3px!important;scroll-snap-align:start
+  }
+  #starfall-cpu #game>.hand .card .name{min-height:22px!important;padding:3px 22px 2px 3px!important;font-size:10px!important;line-height:1.15!important}
+  #starfall-cpu #game>.hand .card .art{height:36px!important;min-height:36px!important;font-size:27px!important}
+  #starfall-cpu #game>.hand .card .ability{flex-basis:38px!important;height:38px!important;min-height:38px!important;max-height:38px!important;padding:3px!important;font-size:8px!important;line-height:1.15!important}
+  #starfall-cpu #game>.hand .card .keywords{flex-basis:15px!important;height:15px!important;min-height:15px!important;font-size:8px!important}
+  #starfall-cpu #game>.hand .card .stats{bottom:4px!important;padding:3px!important;font-size:10px!important}
+  #starfall-cpu #game>.mulligan-controls{grid-area:mulligan!important;flex-direction:row!important;flex-wrap:wrap!important;gap:5px!important;padding:6px!important}
+  #starfall-cpu #game>.mulligan-controls .mulligan-status{flex:1 1 100%!important;font-size:10px!important}
+  #starfall-cpu #game>.mulligan-controls .mulligan-help{flex:1 1 100%!important;font-size:10px!important}
+  #starfall-cpu #game>.mulligan-controls button{flex:1 1 45%!important;min-height:44px!important;font-size:11px!important}
+  #starfall-cpu #game>.battle-sidebar{
+    grid-area:log!important;display:flex!important;flex-direction:column!important;gap:6px!important;
+    position:static!important;height:auto!important;min-height:0!important;max-height:none!important;align-self:stretch!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.action-log{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:"heading toggle" "controls controls" "feed feed"!important;
+    gap:5px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+    padding:6px!important;overflow:hidden!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.action-log>strong{grid-area:heading!important;align-self:center!important;font-size:11px!important}
+  #starfall-cpu #game #mobile-log-toggle{
+    display:inline-flex!important;grid-area:toggle!important;align-items:center!important;justify-content:center!important;
+    min-height:40px!important;padding:6px 10px!important;border:1px solid #a6ddff!important;border-radius:10px!important;
+    background:linear-gradient(135deg,#244868,#3b75a0)!important;color:#f6fcff!important;font:700 12px system-ui!important
+  }
+  #starfall-cpu #game .log-controls{
+    grid-area:controls!important;display:flex!important;align-items:center!important;justify-content:space-between!important;
+    flex-wrap:wrap!important;gap:5px!important;width:100%!important;padding:4px!important
+  }
+  #starfall-cpu #game .log-controls button{min-height:44px!important;padding:7px 9px!important;font-size:12px!important}
+  #starfall-cpu #game .log-controls .game-volume-control{flex:1 1 130px!important;justify-content:center!important;gap:4px!important;font-size:10px!important}
+  #starfall-cpu #game .log-controls .game-volume-control input{width:min(24vw,90px)!important}
+  #starfall-cpu #game>.battle-sidebar>.action-log .battle-feed{display:none!important}
+  #starfall-cpu.mobile-log-expanded #game>.battle-sidebar>.action-log .battle-feed{
+    display:flex!important;grid-area:feed!important;flex:0 0 clamp(90px,14vh,130px)!important;
+    width:100%!important;height:clamp(90px,14vh,130px)!important;min-height:0!important;max-height:clamp(90px,14vh,130px)!important;
+    overflow-y:auto!important;padding:5px!important;font-size:10px!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row){
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin:0!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row) button{
+    width:100%!important;min-width:0!important;min-height:48px!important;padding:8px 7px!important;font-size:13px!important;line-height:1.2!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row) #end-turn{grid-column:1/-1!important}
+  #starfall-cpu #starfall-cpu #game>.battle-sidebar>.attack-confirm-row,
+  #starfall-cpu #game>.battle-sidebar>.attack-confirm-row{
+    position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+    transform:translate(-50%,-50%)!important;z-index:5000!important;width:min(94vw,420px)!important;
+    max-width:calc(100vw - 20px)!important;display:flex!important;flex-direction:column!important;gap:8px!important;
+    padding:12px!important;border-radius:18px!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.attack-confirm-row[hidden]{display:none!important}
+  #starfall-cpu #game>.battle-sidebar>.attack-confirm-row button{width:100%!important;min-height:48px!important;font-size:14px!important}
+  #starfall-cpu #game>.zone{margin:0!important;min-height:0!important;padding:5px 6px!important;overflow:visible!important}
+  #starfall-cpu #game .person{column-gap:4px!important;row-gap:2px!important}
+  #starfall-cpu #game .person #you-faction,#starfall-cpu #game .person #cpu-faction{max-width:100px!important;font-size:10px!important;line-height:1.1!important}
+  #starfall-cpu #game .person .life{font-size:12px!important;padding:4px 7px!important}
+  #starfall-cpu #game #mana{top:0!important;min-width:104px!important;min-height:40px!important;padding:5px 8px!important;font-size:16px!important}
+  #starfall-cpu #game #cpu-mana{font-size:12px!important;padding:4px 6px!important}
+  #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{
+    box-sizing:border-box!important;display:flex!important;flex-wrap:nowrap!important;align-items:center!important;
+    justify-content:flex-start!important;gap:5px!important;height:var(--battlefield-height)!important;
+    min-height:var(--battlefield-height)!important;max-height:var(--battlefield-height)!important;
+    padding:2px 3px!important;overflow-x:auto!important;overflow-y:hidden!important
+  }
+  #starfall-cpu #game .material-card{
+    flex:0 0 clamp(94px,27vw,110px)!important;width:clamp(94px,27vw,110px)!important;
+    height:clamp(100px,calc(var(--battlefield-height) - 8px),122px)!important;
+    min-height:clamp(100px,calc(var(--battlefield-height) - 8px),122px)!important;
+    max-height:clamp(100px,calc(var(--battlefield-height) - 8px),122px)!important;
+    padding:4px!important;gap:2px!important;flex-shrink:0!important
+  }
+  #starfall-cpu #game .material-card .material-art{height:29px!important;min-height:29px!important;font-size:24px!important}
+  #starfall-cpu #game .material-card .material-ability{flex-basis:32px!important;height:32px!important;min-height:32px!important;max-height:32px!important;padding:2px!important;font-size:8px!important;line-height:1.1!important}
+  #starfall-cpu #game .material-card .material-name{font-size:9px!important;line-height:1.1!important}
+  #starfall-cpu #game .material-card .material-stats{bottom:3px!important;padding:3px!important;font-size:9px!important}
+  #starfall-cpu #game>.zone.enemy>#cpu-meta,
+  #starfall-cpu #game>.zone:not(.enemy)>#you-meta{
+    position:static!important;inset:auto!important;transform:none!important;display:flex!important;flex-direction:row!important;
+    align-items:stretch!important;justify-content:flex-end!important;gap:4px!important;width:min(100%,310px)!important;
+    min-width:0!important;max-width:100%!important;min-height:0!important;margin:4px 0 0 auto!important;padding:4px!important
+  }
+  #starfall-cpu #game .zone.enemy>#cpu-meta .opponent-count,
+  #starfall-cpu #game>.zone:not(.enemy)>#you-meta .player-count{
+    flex:1 1 0!important;width:50%!important;height:34px!important;min-height:34px!important;max-height:34px!important;
+    padding:3px 4px!important;font-size:10px!important;white-space:nowrap!important
+  }
+}
+
 </style>
 <div class="card-pool-overlay" id="card-pool-overlay" hidden><section class="card-pool-dialog" role="dialog" aria-modal="true" aria-labelledby="card-pool-title"><div class="card-pool-header"><div><h2 id="card-pool-title">🃏 カードプール</h2><p>カード名と効果を一覧で確認できます。</p></div><button id="close-card-pool" type="button">閉じる</button></div><div class="card-pool-controls"><label for="pool-faction">デッキ<select id="pool-faction"><option value="all">すべて</option><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label class="pool-search-label" for="pool-search">カード名・効果を検索<input id="pool-search" type="search" placeholder="例：守護、ドロー、竜"></label><span class="card-pool-count" id="card-pool-count" aria-live="polite"></span></div><div class="card-pool-grid" id="card-pool-grid"></div></section></div><div class="rules-overlay" id="rules-overlay" hidden><section class="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title"><h2 id="rules-title">はじめての方へ · あそびかた</h2><ul><li>ライフの上限は20です。表示例：20/20。相手のライフを0にすると勝ちです。</li><li>初回は先攻1マナ・後攻2マナ。2回目の自分のターンは先攻2マナ・後攻2マナ。3回目以降は自分のターンごとに1増え、最大10です。</li><li>デッキは30枚です。各デッキ固有の固定10種類を各1枚含み、残り20枚は同じデッキのカードからランダムに加えます。同じカードは最大2枚で、順番とランダム枠は対戦ごとに変わります。</li><li>初期手札で引き直したいカードを選び、マリガンは各プレイヤー1回だけ使えます。</li><li>各ターンに1枚引きます。山札が空のときに引くと負けです。</li><li>マテリアルはそれぞれ1回攻撃できます。召喚したターンは攻撃できません（速攻を除く）。</li><li>呪文は使用確認ですぐ使えます。対象指定の呪文は対象を選んでください。</li><li>通常のマテリアルは攻撃を防ぎません。守護だけがライフを守り、破壊されるまで効果が続きます。</li><li>相手に守護がいなければ、他のマテリアルがいても「全員で攻撃する」で一斉攻撃できます。攻撃は画面中央の「攻撃の確認」で実行します。</li><li>自分のターンは2分以内に操作します。時間切れは自動でターン終了です。</li></ul><button id="close-rules" type="button">ゲームを始める</button></section></div>
 <div class="deck-setup" id="deck-setup" aria-label="対戦デッキを選択"><h1 class="standby-title" aria-label="太陽と月 デュエノア"><span class="title-celestial" aria-hidden="true"><span class="title-sun">☀️</span><span class="title-moon">🌙</span></span> デュエノア</h1><label for="you-name">ホスト<input id="you-name" type="text" maxlength="16" autocomplete="nickname" value="あなた"></label><label for="you-deck">あなたのデッキ<select id="you-deck"><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label id="cpu-name-label" for="cpu-name">ゲスト<input id="cpu-name" type="text" maxlength="16" value="CPU"></label><label for="cpu-deck">相手のデッキ<select id="cpu-deck"><option value="flame">🔴 炎</option><option value="earth" selected>🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label id="cpu-difficulty-label" for="cpu-difficulty">CPUの難易度<select id="cpu-difficulty"><option value="easy">🌱 かんたん</option><option value="normal" selected>⚔️ ふつう</option><option value="hard">🔥 むずかしい</option></select></label><div class="small" id="matchup">それぞれのデッキを選んでください。</div><button class="card-pool-open" id="show-card-pool" type="button">🃏 カードプールを見る</button><button class="play-start" id="play-start" type="button" hidden>オンライン対戦を開始</button><button class="play-start cpu-play-start" id="cpu-start" type="button">CPU戦を開始</button></div><section class="online-panel" id="online-panel" aria-label="オンライン対戦"><strong>🌐 オンライン対戦</strong><div class="online-row"><button id="create-room" type="button">部屋を作る</button><input id="room-code" type="text" placeholder="4桁の部屋コード" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off"><button id="join-room" type="button">コードで参加</button><button id="spectate-room" type="button">観戦する</button><button id="copy-room" type="button" disabled>コードをコピー</button><button id="copy-room-link" type="button" hidden disabled>招待リンクをコピー</button><button id="leave-room" type="button" hidden>対戦を終了</button><button id="ready-up" type="button" hidden disabled>準備OK</button></div><div class="online-status" id="online-status" aria-live="polite">4桁の部屋コードを共有して、オンライン対戦や観戦ができます。</div><div class="online-status" id="ready-status" hidden aria-live="polite"></div><input id="invite-url" class="invite-url" type="text" readonly hidden aria-label="対戦招待リンク"></section><audio id="bgm-track" src="assets/aqua-material-theme.mp3" preload="auto" loop></audio><audio id="coin-sfx" src="assets/coin-drop.mp3" preload="auto"></audio><div class="sound-controls" aria-label="サウンド設定"><button id="toggle-bgm" type="button" aria-pressed="true">🎵 BGM ON</button><label class="volume-control" for="bgm-volume">🎚 BGM音量 <input id="bgm-volume" type="range" min="0" max="100" value="22"><span id="bgm-volume-value">22%</span></label><button id="toggle-sfx" type="button" aria-pressed="true">🔔 効果音 ON</button></div><div id="game" hidden><div class="coin-stage" id="coin-stage"><div class="coin" id="coin" aria-label="コイン"><span class="coin-face sun" aria-hidden="true">☀️</span><span class="coin-face moon" aria-hidden="true">🌙</span></div><div><strong>先攻をコイントスで決めよう</strong><div class="coin-result" id="coin-result" aria-live="polite">あなたかCPUが先攻です</div></div><button id="flip" type="button">🪙 コイントス</button></div><div class="result-overlay" id="result-overlay" hidden><section class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="result-title"><div class="result-mark">🏆</div><h2 id="result-title"></h2><p id="result-detail"></p><div class="result-actions"><button id="result-rematch" type="button">再戦</button><button id="result-return" type="button">初めの画面に戻る</button></div></section></div><div class="top"><h2>☀️🌙 デュエノア</h2><span class="tag" id="phase">あなたのターン · 2ターン目</span></div><div class="turn-announcement" id="turn-announcement" hidden role="status" aria-live="assertive">あなたのターンです</div>
 <div class="zone enemy"><div class="person"><span id="cpu-faction"></span><span class="life" id="cpu-life">💚 ライフ 20/20</span><button class="target-player" id="target-cpu-player" type="button" hidden>CPUのライフを対象</button><span class="mana" id="cpu-mana">✨ マナ 0 / 0</span></div><div class="field" id="cpu-field"></div><div class="meta" id="cpu-meta"></div></div>
-<div class="divider rift-timer" id="rift-timer" role="group" aria-label="戦闘タイマー"><span class="rift-track" id="rift-track" hidden aria-hidden="true"><span class="rift-progress" id="rift-progress"></span></span><span class="rift-count" id="turn-timer" hidden role="timer" aria-live="polite">02:00</span></div><aside class="battle-sidebar" aria-label="行動ログと操作"><section class="action-log" aria-label="行動ログ"><strong>📜 行動ログ（直近12件）</strong><div class="log-controls"><button id="toggle-bgm-game" type="button" aria-label="BGMのオン／オフ" aria-pressed="true">🎵 BGM ON</button><label class="volume-control game-volume-control" for="bgm-volume-game">🎚 BGM音量 <input id="bgm-volume-game" type="range" min="0" max="100" value="22"><span id="bgm-volume-game-value">22%</span></label><button class="secondary" type="button" id="surrender">降参</button></div><div class="battle-feed" id="battle-feed" aria-live="polite"><div class="battle-entry muted">召喚・呪文・ドロー・攻撃などの記録がここに残ります。</div></div></section><div class="actions"><button id="confirm" type="button" disabled>召喚を確認</button><button class="secondary" id="cancel" type="button" disabled>キャンセル</button><button class="secondary" id="attack-face" type="button" hidden>対戦相手を攻撃先に選ぶ</button><button class="secondary" id="attack-all" type="button" hidden>全員で攻撃する</button><button id="end-turn" type="button">ターン終了</button></div><div class="actions attack-confirm-row" id="attack-confirm-row" hidden><div class="attack-confirm-summary" id="attack-confirm-summary" aria-live="polite"></div><button class="secondary" id="cancel-attack-confirm" type="button">キャンセル</button><button id="confirm-attack" type="button" disabled>攻撃の確認</button></div>
+<div class="divider rift-timer" id="rift-timer" role="group" aria-label="戦闘タイマー"><span class="rift-track" id="rift-track" hidden aria-hidden="true"><span class="rift-progress" id="rift-progress"></span></span><span class="rift-count" id="turn-timer" hidden role="timer" aria-live="polite">02:00</span></div><aside class="battle-sidebar" aria-label="行動ログと操作"><section class="action-log" aria-label="行動ログ"><strong>📜 行動ログ（直近12件）</strong><button id="mobile-log-toggle" type="button" aria-expanded="false">ログを表示</button><div class="log-controls"><button id="toggle-bgm-game" type="button" aria-label="BGMのオン／オフ" aria-pressed="true">🎵 BGM ON</button><label class="volume-control game-volume-control" for="bgm-volume-game">🎚 BGM音量 <input id="bgm-volume-game" type="range" min="0" max="100" value="22"><span id="bgm-volume-game-value">22%</span></label><button class="secondary" type="button" id="surrender">降参</button></div><div class="battle-feed" id="battle-feed" aria-live="polite"><div class="battle-entry muted">召喚・呪文・ドロー・攻撃などの記録がここに残ります。</div></div></section><div class="actions"><button id="confirm" type="button" disabled>召喚を確認</button><button class="secondary" id="cancel" type="button" disabled>キャンセル</button><button class="secondary" id="attack-face" type="button" hidden>対戦相手を攻撃先に選ぶ</button><button class="secondary" id="attack-all" type="button" hidden>全員で攻撃する</button><button id="end-turn" type="button">ターン終了</button></div><div class="actions attack-confirm-row" id="attack-confirm-row" hidden><div class="attack-confirm-summary" id="attack-confirm-summary" aria-live="polite"></div><button class="secondary" id="cancel-attack-confirm" type="button">キャンセル</button><button id="confirm-attack" type="button" disabled>攻撃の確認</button></div>
 </aside>
 <div class="zone"><div class="person"><span id="you-faction"></span><span class="life" id="you-life">❤️ ライフ 20/20</span><button class="target-player" id="target-you-player" type="button" hidden>あなたのライフを対象</button><span class="mana" id="mana">✨ マナ 2 / 2</span></div><div class="field" id="you-field"></div><div class="meta" id="you-meta"></div></div>
 <div class="footer"><strong>あなたの手札</strong></div><div class="hand" id="hand" aria-label="あなたの手札"></div><div class="mulligan-controls" id="mulligan-controls" hidden><div class="mulligan-status" id="mulligan-status"></div><p class="mulligan-help">手札のカードを選び、「選んだカードを引き直す」を押します。引き直しは一度だけです。</p><button id="mulligan-redraw" type="button" disabled>選んだカードを引き直す</button><button class="secondary" id="mulligan-keep" type="button">この手札で始める</button></div>
@@ -1489,7 +1607,7 @@ el('#bgm-volume').addEventListener('input',()=>setBgmVolume('#bgm-volume'));el('
 el('#create-room').addEventListener('click',makeRoom);
 el('#join-room').addEventListener('click',joinRoom);el('#spectate-room').addEventListener('click',joinAsSpectator);
 el('#leave-room').addEventListener('click',leaveOnline);el('#ready-up').addEventListener('click',()=>{if(!NET.active||NET.gameStarted||NET.spectating)return;getAudioContext();NET.localReady=!NET.localReady;sendOnline({type:'ready',ready:NET.localReady});updateOnlineControls();onlineStatus(NET.localReady?(NET.remoteReady?'二人とも準備OKです。ホストはコイントスで開始できます。':'準備OKです。相手の準備を待っています。'):'準備を解除しました。');});
-el('#result-rematch').addEventListener('click',rematchMatch);el('#result-return').addEventListener('click',returnToInitialScreen);el('#mulligan-redraw').addEventListener('click',()=>submitMulligan(true));el('#mulligan-keep').addEventListener('click',()=>submitMulligan(false));el('#surrender').addEventListener('click',surrenderMatch);root.addEventListener('click',event=>{if(!NET.spectating)return;const target=event.target instanceof Element?event.target:null;if(target?.closest('#game .zone,#game .hand,#game .actions,#game .mulligan-controls,#game .footer,#game .target-player,#game #result-overlay')){event.preventDefault();event.stopImmediatePropagation();}},true);
+el('#mobile-log-toggle').addEventListener('click',()=>{const expanded=root.classList.toggle('mobile-log-expanded'),button=el('#mobile-log-toggle');button.setAttribute('aria-expanded',String(expanded));button.textContent=expanded?'ログを閉じる':'ログを表示';});el('#result-rematch').addEventListener('click',rematchMatch);el('#result-return').addEventListener('click',returnToInitialScreen);el('#mulligan-redraw').addEventListener('click',()=>submitMulligan(true));el('#mulligan-keep').addEventListener('click',()=>submitMulligan(false));el('#surrender').addEventListener('click',surrenderMatch);root.addEventListener('click',event=>{if(!NET.spectating)return;const target=event.target instanceof Element?event.target:null;if(target?.closest('#game .zone,#game .hand,#game .actions,#game .mulligan-controls,#game .footer,#game .target-player,#game #result-overlay')){event.preventDefault();event.stopImmediatePropagation();}},true);
 el('#you-name').addEventListener('input',()=>{S.youName=cleanPlayerName(el('#you-name').value,'あなた');updateMatchup();});el('#you-name').addEventListener('change',syncPlayerNames);el('#cpu-name').addEventListener('input',()=>{S.cpuName=cleanPlayerName(el('#cpu-name').value,'CPU');updateMatchup();});el('#cpu-name').addEventListener('change',syncPlayerNames);
 el('#copy-room').addEventListener('click',async()=>{const code=el('#room-code').value;if(!code)return;try{await navigator.clipboard.writeText(code);onlineStatus('部屋コードをコピーしました。相手に送ってください。');}catch{el('#room-code').select();document.execCommand('copy');onlineStatus('部屋コードをコピーしました。');}});
 el('#copy-room-link').addEventListener('click',async()=>{const invite=el('#invite-url'),link=invite.value;if(!link)return;try{await navigator.clipboard.writeText(link);onlineStatus('招待リンクをコピーしました。相手に送ってください。');}catch{invite.focus();invite.select();onlineStatus('招待リンクを選択しました。Ctrl+Cでコピーしてください。');}});
