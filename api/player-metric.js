@@ -9,6 +9,7 @@ const ALLOWED_ORIGINS = new Set([
   'http://127.0.0.1:3000',
 ]);
 const PLAYER_SET_KEY = 'duenoa:metrics:unique-player-hashes:v1';
+const DAILY_PREFIX = 'duenoa:metrics:unique-player-additions:v1:';
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function setHeaders(req, res) {
@@ -26,7 +27,7 @@ async function redisCommand(url, token, command) {
   const response = await fetch(url.replace(/\/+$/, ''), {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: 'Bearer ' + token,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(command),
@@ -36,6 +37,26 @@ async function redisCommand(url, token, command) {
     throw new Error(payload.error || 'Redis request failed');
   }
   return payload.result;
+}
+
+function jstDate(offsetDays) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  const date = new Date(Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day) + (offsetDays || 0)
+  ));
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('-');
 }
 
 module.exports = async function playerMetric(req, res) {
@@ -61,10 +82,27 @@ module.exports = async function playerMetric(req, res) {
 
   try {
     if (req.method === 'GET') {
-      const count = await redisCommand(url, token, ['SCARD', PLAYER_SET_KEY]);
+      const dates = Array.from({ length: 30 }, (_, index) => jstDate(index - 29));
+      const keys = dates.map(date => DAILY_PREFIX + date);
+      const [count, values] = await Promise.all([
+        redisCommand(url, token, ['SCARD', PLAYER_SET_KEY]),
+        redisCommand(url, token, ['MGET', ...keys]),
+      ]);
+      const total = Number(count) || 0;
+      const dailyCounts = dates.map((_, index) => Math.max(0, Number(values && values[index]) || 0));
+      const observedInWindow = dailyCounts.reduce((sum, value) => sum + value, 0);
+      let cumulative = Math.max(0, total - observedInWindow);
+      const series = dates.map((date, index) => {
+        const newPlayers = dailyCounts[index];
+        cumulative += newPlayers;
+        return { date, newPlayers, uniquePlayers: cumulative };
+      });
       return res.status(200).json({
         metric: 'unique_browsers_that_started_a_game',
-        uniquePlayers: Number(count) || 0,
+        uniquePlayers: total,
+        timezone: 'Asia/Tokyo',
+        days: 30,
+        series,
       });
     }
 
@@ -75,7 +113,11 @@ module.exports = async function playerMetric(req, res) {
     }
 
     const hashedId = createHash('sha256').update(id.toLowerCase()).digest('hex');
-    const added = await redisCommand(url, token, ['SADD', PLAYER_SET_KEY, hashedId]);
+    const dayKey = DAILY_PREFIX + jstDate(0);
+    const script = "local added = redis.call('SADD', KEYS[1], ARGV[1]); if added == 1 then redis.call('INCR', KEYS[2]); end; return added";
+    const added = await redisCommand(url, token, [
+      'EVAL', script, 2, PLAYER_SET_KEY, dayKey, hashedId,
+    ]);
     const count = await redisCommand(url, token, ['SCARD', PLAYER_SET_KEY]);
     return res.status(200).json({
       metric: 'unique_browsers_that_started_a_game',
