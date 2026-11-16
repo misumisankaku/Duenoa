@@ -1814,16 +1814,22 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
 /* Hide the redundant hand heading and enlarge cards for easier reading */
 #starfall-cpu #game>.footer{display:none!important}
 #starfall-cpu #game>.hand .card{scale:1.12 1.04!important;margin-inline:4px!important}
-#starfall-cpu #game .material-card{scale:1.10 1.04!important;margin-inline:5px!important}
+#starfall-cpu #game .material-card{scale:1.10 1!important;margin-inline:5px!important}
 @media(max-height:600px){
  #starfall-cpu #game>.hand .card{scale:1.09 1.03!important}
- #starfall-cpu #game .material-card{scale:1.08 1.03!important}
+ #starfall-cpu #game .material-card{scale:1.08 1!important}
 }
 
 
 /* Center material rows when they fit; keep overflowing rows reachable from the left */
 #starfall-cpu #game #cpu-field>.material-card:first-child,#starfall-cpu #game #you-field>.material-card:first-child{margin-left:auto!important}
 #starfall-cpu #game #cpu-field>.material-card:last-child,#starfall-cpu #game #you-field>.material-card:last-child{margin-right:auto!important}
+
+
+/* Place both deck/hand counters lower and keep battlefield cards inside their frames */
+#starfall-cpu #game .zone.enemy>#cpu-meta,#starfall-cpu #game>.zone:not(.enemy)>#you-meta{bottom:6px!important}
+#starfall-cpu #game .material-card{scale:1.10 1!important}
+@media(max-height:600px){#starfall-cpu #game .material-card{scale:1.08 1!important}}
 
 </style>
 <div id="rotate-screen-overlay" role="status" aria-live="polite"><section class="rotate-screen-card"><div class="rotate-phone-icon" aria-hidden="true">📱↻</div><h2>横向きでプレイ</h2><p>スマートフォンを横向きにすると、対戦画面が表示されます。</p></section></div>
