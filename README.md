@@ -10,7 +10,7 @@
 
 ## ランダム戦の設定
 
-ランダム戦の待ち列にはUpstash Redisを使います。Vercelのプロジェクトで **Storage → Create Database → Upstash Redis → Free** を選んでプロジェクトへ接続してください。接続すると、必要な `UPSTASH_REDIS_REST_URL` と `UPSTASH_REDIS_REST_TOKEN` がVercelに設定されます。
+ランダム戦の待ち列にはUpstash Redisを使います。Vercelのプロジェクトで **Storage → Create Database → Upstash Redis → Free** を選んでプロジェクトへ接続してください。接続すると、Vercelが接続用の環境変数を自動で設定します。
 
 ## オンライン通信
 
