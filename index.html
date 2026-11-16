@@ -1897,7 +1897,7 @@ el('#tutorial-back').addEventListener('click',()=>{if(tutorialIndex>0){tutorialI
 el('#tutorial-next').addEventListener('click',()=>{if(tutorialIndex<tutorialSlides.length-1){tutorialIndex++;renderTutorial();}else closeTutorial();});
 el('#tutorial-overlay').addEventListener('click',event=>{if(event.target===el('#tutorial-overlay'))closeTutorial();});
 document.addEventListener('keydown',event=>{if(el('#tutorial-overlay').hidden)return;if(event.key==='Escape'){event.preventDefault();closeTutorial();}else if(event.key==='ArrowRight'&&tutorialIndex<tutorialSlides.length-1){tutorialIndex++;renderTutorial();}else if(event.key==='ArrowLeft'&&tutorialIndex>0){tutorialIndex--;renderTutorial();}});
-el('#close-rules').addEventListener('click',()=>{el('#rules-overlay').hidden=true;try{localStorage.setItem('twd-rules-seen-v2','1');}catch{}}showFirstPlayTutorial(););
+el('#close-rules').addEventListener('click',()=>{el('#rules-overlay').hidden=true;try{localStorage.setItem('twd-rules-seen-v2','1');}catch{}showFirstPlayTutorial();});
 function loadRoomInvite(){const room=new URLSearchParams(location.search).get('room');if(room){el('#room-code').value=room.trim().slice(0,80);onlineStatus('招待リンクを開きました。コードで参加を押して接続してください。');}}
 loadPlayerNames();loadRoomInvite();loadBgmVolume();updateSoundButtons();updateOnlineControls();updateMatchup();
 render();showFirstPlayRules();if(el('#rules-overlay').hidden)showFirstPlayTutorial();
