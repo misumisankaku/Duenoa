@@ -23,7 +23,7 @@ function setHeaders(req, res) {
 }
 
 async function redisCommand(url, token, command) {
-  const response = await fetch(url.replace(/\\/+$/, ''), {
+  const response = await fetch(url.replace(/\/+$/, ''), {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
