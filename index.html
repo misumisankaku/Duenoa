@@ -1793,6 +1793,100 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
 #starfall-cpu #game.coin-pending>*:not(#coin-stage){
  display:none!important;filter:none!important;pointer-events:none!important
 }
+
+/* Remove the narrow status strip during play */
+#starfall-cpu #game>.hint{display:none!important}
+
+/* Short landscape match sizing: use the full height for both fields and the hand */
+@media(orientation:landscape) and (min-width:1000px) and (max-height:240px){
+ #starfall-cpu:has(#game:not([hidden])){
+  width:100%!important;height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;
+  margin:0!important;padding:0!important;overflow:hidden!important
+ }
+ #starfall-cpu #game:not(.coin-pending){
+  display:grid!important;box-sizing:border-box!important;width:100%!important;height:100dvh!important;
+  min-height:0!important;max-height:100dvh!important;margin:0!important;padding:0!important;
+  grid-template-rows:minmax(0,1fr) 10px minmax(0,1fr) 0 minmax(58px,1.3fr) 0!important;
+  grid-template-areas:"enemy enemy log" "divider divider log" "own own log" "footer footer log" "hand mulligan log" "hint hint log"!important;
+  align-content:stretch!important;align-items:stretch!important;column-gap:6px!important;row-gap:1px!important;
+  overflow:hidden!important;--hand-card-height:clamp(58px,36dvh,64px)!important
+ }
+ #starfall-cpu #game>.top,#starfall-cpu #game>.small,#starfall-cpu #game>.hint,#starfall-cpu #game>.footer{display:none!important}
+ #starfall-cpu #game>.zone.enemy{grid-area:enemy!important}
+ #starfall-cpu #game>.zone:not(.enemy){grid-area:own!important}
+ #starfall-cpu #game>.divider{grid-area:divider!important;display:flex!important;align-items:center!important;justify-content:center!important;height:10px!important;min-height:10px!important;margin:0!important;padding:0!important;overflow:hidden!important}
+ #starfall-cpu #game>.zone{
+  position:relative!important;display:flex!important;flex-direction:column!important;align-self:stretch!important;
+  box-sizing:border-box!important;width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;
+  margin:0!important;padding:1px 4px!important;overflow:hidden!important
+ }
+ #starfall-cpu #game .person{
+  display:flex!important;flex:0 0 13px!important;align-items:center!important;flex-wrap:nowrap!important;
+  width:100%!important;height:13px!important;min-height:13px!important;gap:3px!important;font-size:8px!important;line-height:1!important
+ }
+ #starfall-cpu #game .person .life,#starfall-cpu #game .person .mana{padding:1px 4px!important;font-size:8px!important;line-height:1!important}
+ #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{
+  display:flex!important;flex:1 1 0!important;align-items:center!important;justify-content:flex-start!important;
+  width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+  gap:2px!important;padding:0 86px 0 1px!important;overflow-x:auto!important;overflow-y:hidden!important
+ }
+ #starfall-cpu #game .material-card{
+  flex:0 0 64px!important;width:64px!important;height:clamp(32px,calc(100% - 2px),44px)!important;
+  min-height:clamp(32px,calc(100% - 2px),44px)!important;max-height:clamp(32px,calc(100% - 2px),44px)!important;
+  padding:1px!important;gap:0!important;scale:1 1!important
+ }
+ #starfall-cpu #game .material-card .material-name{font-size:6px!important;line-height:1!important}
+ #starfall-cpu #game .material-card .material-art{height:11px!important;min-height:11px!important;font-size:10px!important}
+ #starfall-cpu #game .material-card .material-ability{flex-basis:9px!important;height:9px!important;min-height:9px!important;max-height:9px!important;padding:0!important;font-size:5px!important;line-height:1!important;overflow:hidden!important}
+ #starfall-cpu #game .material-card .material-stats{bottom:0!important;padding:0!important;font-size:6px!important;line-height:1!important}
+ #starfall-cpu #game .zone.enemy>#cpu-meta,#starfall-cpu #game>.zone:not(.enemy)>#you-meta{
+  position:absolute!important;inset:auto 2px 1px auto!important;display:grid!important;grid-template-columns:1fr 1fr!important;
+  gap:1px!important;width:82px!important;min-width:0!important;max-width:82px!important;min-height:0!important;
+  margin:0!important;padding:1px!important;z-index:4!important
+ }
+ #starfall-cpu #game #cpu-meta .opponent-count,#starfall-cpu #game>.zone:not(.enemy)>#you-meta .player-count{
+  width:100%!important;height:14px!important;min-height:14px!important;max-height:14px!important;
+  padding:1px!important;font-size:6px!important;line-height:1!important;white-space:nowrap!important
+ }
+ #starfall-cpu #game>.hand{
+  grid-area:hand!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;
+  gap:3px!important;padding:1px!important;overflow-x:auto!important;overflow-y:hidden!important
+ }
+ #starfall-cpu #game>.hand .card{
+  flex:0 0 clamp(76px,6vw,100px)!important;width:clamp(76px,6vw,100px)!important;
+  height:calc(var(--hand-card-height) - 4px)!important;min-height:calc(var(--hand-card-height) - 4px)!important;
+  max-height:calc(var(--hand-card-height) - 4px)!important;padding:2px!important;gap:1px!important
+ }
+ #starfall-cpu #game>.hand .card .name{min-height:11px!important;padding:1px 16px 1px 1px!important;font-size:7px!important;line-height:1!important}
+ #starfall-cpu #game>.hand .card .art{height:14px!important;min-height:14px!important;font-size:13px!important}
+ #starfall-cpu #game>.hand .card .ability{flex-basis:18px!important;height:18px!important;min-height:18px!important;max-height:18px!important;padding:1px!important;font-size:6px!important;line-height:1!important;overflow:hidden!important}
+ #starfall-cpu #game>.hand .card .keywords{min-height:9px!important;height:9px!important;font-size:6px!important;line-height:1!important}
+ #starfall-cpu #game>.hand .card .stats{bottom:1px!important;padding:1px!important;font-size:6px!important;line-height:1!important}
+ #starfall-cpu #game>.mulligan-controls:not([hidden]){
+  grid-area:mulligan!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:auto auto 20px!important;
+  align-content:center!important;gap:1px!important;width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;
+  margin:0!important;padding:2px!important;overflow:hidden!important
+ }
+ #starfall-cpu #game>.mulligan-controls .mulligan-status,#starfall-cpu #game>.mulligan-controls .mulligan-help{
+  grid-column:1/-1!important;max-height:13px!important;min-height:0!important;margin:0!important;font-size:6px!important;line-height:1.05!important;overflow:hidden!important
+ }
+ #starfall-cpu #game>.mulligan-controls button{width:100%!important;min-height:19px!important;padding:1px!important;font-size:7px!important;line-height:1!important}
+ #starfall-cpu #game>.battle-sidebar{
+  grid-area:log!important;display:flex!important;flex-direction:column!important;align-self:stretch!important;
+  width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;gap:1px!important;overflow:hidden!important
+ }
+ #starfall-cpu #game>.battle-sidebar>.action-log{
+  flex:1 1 auto!important;min-height:0!important;max-height:100%!important;gap:2px!important;padding:2px!important;overflow:hidden!important
+ }
+ #starfall-cpu #game>.battle-sidebar>.action-log>strong{font-size:7px!important;line-height:1!important}
+ #starfall-cpu #game>.battle-sidebar>.action-log .log-controls{gap:2px!important;padding:1px!important}
+ #starfall-cpu #game>.battle-sidebar>.action-log .log-controls button{min-height:17px!important;padding:1px!important;font-size:7px!important}
+ #starfall-cpu #game>.battle-sidebar>.action-log .battle-feed{flex:1 1 auto!important;min-height:0!important;max-height:32px!important;padding:1px!important;font-size:6px!important;overflow:auto!important}
+ #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row){display:grid!important;grid-template-columns:1fr 1fr!important;gap:2px!important;margin:0!important}
+ #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row) button{min-height:18px!important;padding:1px!important;font-size:7px!important;line-height:1!important}
+ #starfall-cpu #game>.battle-sidebar>#rift-timer{flex-basis:0!important;height:0!important;min-height:0!important;max-height:0!important}
+}
 </style>
 <div id="rotate-screen-overlay" role="status" aria-live="polite"><section class="rotate-screen-card"><div class="rotate-phone-icon" aria-hidden="true">📱↻</div><h2>横向きでプレイ</h2><p>スマートフォンを横向きにすると、対戦画面が表示されます。</p></section></div>
 <div class="card-pool-overlay" id="card-pool-overlay" hidden><section class="card-pool-dialog" role="dialog" aria-modal="true" aria-labelledby="card-pool-title"><div class="card-pool-header"><div><h2 id="card-pool-title">🃏 カードプール</h2><p>カード名と効果を一覧で確認できます。</p></div><button id="close-card-pool" type="button">閉じる</button></div><div class="card-pool-controls"><label for="pool-faction">デッキ<select id="pool-faction"><option value="all">すべて</option><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label class="pool-search-label" for="pool-search">カード名・効果を検索<input id="pool-search" type="search" placeholder="例：守護、ドロー、竜"></label><span class="card-pool-count" id="card-pool-count" aria-live="polite"></span></div><div class="card-pool-grid" id="card-pool-grid"></div></section></div><div class="rules-overlay" id="rules-overlay" hidden><section class="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title"><h2 id="rules-title">はじめての方へ · あそびかた</h2><ul><li>ライフの上限は20です。表示例：20/20。相手のライフを0にすると勝ちです。</li><li>カードを出すには、カードの右上にある数字と同じ数の力が必要です。最初は先に動く人が1、後から動く人が2。次の番はどちらも2で、その後は自分の番ごとに1ずつ増えて最大10です。</li><li>デッキは30枚です。各デッキ固有の固定10種類を各1枚含み、残り20枚は同じデッキのカードからランダムに加えます。同じカードは最大2枚で、順番とランダム枠は対戦ごとに変わります。</li><li>最初にもらった手札から、替えたいカードを選んで一度だけ引き直せます。</li><li>自分の番のはじめに1枚引きます。山札が空のときに引くと負けです。</li><li>マテリアルはそれぞれ1回攻撃できます。召喚したターンは攻撃できません（速攻を除く）。</li><li>呪文は使用確認ですぐ使えます。対象指定の呪文は対象を選んでください。</li><li>通常のマテリアルは攻撃を防ぎません。守護だけがライフを守り、破壊されるまで効果が続きます。</li><li>相手に守護がいなければ、他のマテリアルがいても「全員で攻撃する」で一斉攻撃できます。攻撃は画面中央の「攻撃の確認」で実行します。</li><li>自分のターンは2分以内に操作します。時間切れは自動でターン終了です。</li></ul><button id="launch-tutorial-from-rules" type="button">📘 チュートリアルを見る</button><button id="close-rules" type="button">ゲームを始める</button></section></div>
