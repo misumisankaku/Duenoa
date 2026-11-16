@@ -84,8 +84,8 @@ function setCors(req, res) {
 }
 
 async function evaluate(script, keys, args) {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
   const response = await fetch(url.replace(/\/+$/, ''), {
     method: 'POST',
     headers: {
@@ -105,8 +105,8 @@ module.exports = async function matchmaking(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'method_not_allowed' });
   if (req.headers.origin && !ORIGINS.has(req.headers.origin)) return res.status(403).json({ error: 'origin_not_allowed' });
 
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
   if (!url || !token) return res.status(503).json({ error: 'storage_not_configured' });
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
