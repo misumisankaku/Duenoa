@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101a2c">
+<title>デュエノア 利用者数</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#141f33;--panel2:#1b2a42;--gold:#e9c66b;--blue:#83c9e8;--text:#f5eedc;--muted:#b9c4d6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:clamp(14px,3vw,36px);font-family:system-ui,"Yu Gothic",sans-serif;color:var(--text);background:radial-gradient(ellipse at 50% 0,#233653 0,#111c30 42%,var(--bg) 100%)}
+main{max-width:1120px;margin:0 auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px}
+header a{color:#f5d985;text-decoration:none;font-weight:800}
+h1{margin:0;font-family:"Yu Mincho",serif;font-size:clamp(25px,4vw,38px);letter-spacing:.08em}
+header p{margin:5px 0 0;color:var(--muted);font-size:14px}
+button{border:1px solid #8b9bb4;border-radius:10px;padding:10px 14px;color:#f9f0d9;background:linear-gradient(145deg,#263b59,#17253b);font:700 14px system-ui;cursor:pointer}
+button:hover{border-color:var(--gold);filter:brightness(1.12)}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+.metric-card{padding:18px 20px;border:1px solid #6e7890;border-radius:16px;background:linear-gradient(145deg,#1d2c43dd,#111a2c);box-shadow:inset 0 1px #ffffff12,0 12px 28px #0003}
+.metric-card span{display:block;color:#c7d2e2;font-size:14px;font-weight:700}
+.metric-card strong{display:block;margin-top:5px;font-size:clamp(30px,6vw,48px);line-height:1.1;color:#ffe18b;font-variant-numeric:tabular-nums}
+.metric-card.today strong{color:#9ee5ff}
+.panel{padding:clamp(14px,2.5vw,24px);border:1px solid #65718b;border-radius:18px;background:#111a2beF;box-shadow:0 18px 50px #0004}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h2{margin:0;font-size:20px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:#d2d9e4;font-size:13px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{display:inline-block;width:13px;height:13px;border-radius:4px;background:#e9c66b}
+.swatch.line{height:3px;border-radius:99px;background:#83c9e8}
+.chart-wrap{position:relative;margin-top:12px}
+canvas{display:block;width:100%;height:360px}
+.chart-tooltip{position:absolute;display:none;z-index:2;pointer-events:none;max-width:220px;padding:8px 10px;border:1px solid #e9c66b;border-radius:9px;background:#0b1220f2;color:#fff7de;font-size:12px;line-height:1.55;box-shadow:0 6px 20px #0008;white-space:nowrap}
+.note{margin:14px 2px 0;color:#c0cad8;font-size:13px;line-height:1.65}
+.status{min-height:22px;margin-top:10px;color:#f2d78b;font-size:13px}
+details{margin-top:18px;border-top:1px solid #ffffff20;padding-top:12px;color:#d9e1ed}
+summary{cursor:pointer;font-weight:700}
+table{width:100%;margin-top:10px;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid #ffffff16;text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{color:#e8d99f}
+footer{margin:18px 4px 0;color:#aeb9ca;font-size:12px}
+@media(max-width:620px){header{align-items:flex-start;flex-direction:column}.summary{gap:9px}.metric-card{padding:14px}.metric-card span{font-size:12px}.panel{padding:13px}canvas{height:300px}.legend{gap:10px;font-size:12px}button{min-height:42px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div><a href="./">☀️🌙 デュエノアへ戻る</a><h1>利用者数</h1><p>対戦を開始したブラウザの数を確認できます</p></div>
+  <button id="refresh" type="button">↻ 更新</button>
+</header>
+<section class="summary" aria-label="利用者数の概要">
+  <article class="metric-card"><span>累計ユニークブラウザ</span><strong id="total">—</strong></article>
+  <article class="metric-card today"><span>今日、新しく計測したブラウザ</span><strong id="today">—</strong></article>
+</section>
+<section class="panel">
+  <div class="panel-head">
+    <h2>直近30日間の推移</h2>
+    <div class="legend" aria-label="グラフの凡例">
+      <span><i class="swatch"></i>その日に初めて対戦した数（左軸）</span>
+      <span><i class="swatch line"></i>累計（右軸）</span>
+    </div>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="chart" role="img" aria-label="直近30日間の日別新規ブラウザ数と累計数のグラフ"></canvas>
+    <div id="tooltip" class="chart-tooltip" aria-hidden="true"></div>
+  </div>
+  <div id="status" class="status" role="status" aria-live="polite">計測値を読み込んでいます…</div>
+  <p class="note">日別の数は、そのブラウザで初めて対戦を開始した日に加算されます。今回の計測開始より前の利用者数は累計の基準値に含まれ、日別の履歴には表示されません。数値は人の人数ではなく、ブラウザごとの概算です。</p>
+  <details>
+    <summary>日ごとの数値を見る</summary>
+    <div style="overflow-x:auto"><table><thead><tr><th>日付</th><th>新しく計測した数</th><th>累計</th></tr></thead><tbody id="rows"></tbody></table></div>
+  </details>
+</section>
+<footer>集計対象は、匿名のブラウザIDを使って対戦を開始した利用者です。</footer>
+</main>
+<script>
+(function(){
+  'use strict';
+  var api=location.hostname.endsWith('.vercel.app')?'/api/player-metric':'https://my-gamma-lyart.vercel.app/api/player-metric';
+  var canvas=document.getElementById('chart');
+  var ctx=canvas.getContext('2d');
+  var wrap=canvas.parentElement;
+  var tooltip=document.getElementById('tooltip');
+  var status=document.getElementById('status');
+  var data=[];
+  var bounds=null;
+
+  function formatDate(value){
+    var parts=value.split('-');
+    return parts[1]+'/'+parts[2];
+  }
+  function niceMax(value){
+    if(value<=1)return 1;
+    var power=Math.pow(10,Math.floor(Math.log10(value)));
+    var scaled=value/power;
+    var unit=scaled<=1?1:scaled<=2?2:scaled<=5?5:10;
+    return unit*power;
+  }
+  function draw(){
+    var width=canvas.clientWidth;
+    var height=canvas.clientHeight;
+    if(!width||!height||!data.length)return;
+    var ratio=window.devicePixelRatio||1;
+    canvas.width=Math.round(width*ratio);
+    canvas.height=Math.round(height*ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+    ctx.clearRect(0,0,width,height);
+    var margin={top:26,right:58,bottom:44,left:48};
+    var plot={x:margin.left,y:margin.top,w:width-margin.left-margin.right,h:height-margin.top-margin.bottom};
+    var dailyMax=niceMax(Math.max.apply(null,data.map(function(d){return d.newPlayers;})));
+    var totalValues=data.map(function(d){return d.uniquePlayers;});
+    var totalMin=Math.min.apply(null,totalValues);
+    var totalMax=Math.max.apply(null,totalValues);
+    if(totalMax===totalMin){totalMax=totalMin+1;}
+    var step=plot.w/data.length;
+    bounds={plot:plot,step:step};
+
+    ctx.font='12px system-ui, sans-serif';
+    ctx.textBaseline='middle';
+    for(var tick=0;tick<=4;tick++){
+      var y=plot.y+plot.h-(plot.h*tick/4);
+      ctx.strokeStyle='rgba(205,218,235,.13)';
+      ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(plot.x,y);ctx.lineTo(plot.x+plot.w,y);ctx.stroke();
+      ctx.fillStyle='#b9c4d6';ctx.textAlign='right';
+      ctx.fillText(String(Math.round(dailyMax*tick/4)),plot.x-9,y);
+      var totalTick=totalMin+(totalMax-totalMin)*tick/4;
+      ctx.textAlign='left';
+      ctx.fillText(String(Math.round(totalTick)),plot.x+plot.w+9,y);
+    }
+    ctx.fillStyle='#e9c66b';
+    data.forEach(function(d,index){
+      var barHeight=(d.newPlayers/dailyMax)*plot.h;
+      var x=plot.x+index*step+step*.2;
+      var barWidth=Math.max(2,step*.6);
+      ctx.globalAlpha=.88;
+      ctx.fillRect(x,plot.y+plot.h-barHeight,barWidth,barHeight);
+    });
+    ctx.globalAlpha=1;
+
+    ctx.beginPath();
+    data.forEach(function(d,index){
+      var x=plot.x+index*step+step/2;
+      var y=plot.y+plot.h-((d.uniquePlayers-totalMin)/(totalMax-totalMin))*plot.h;
+      if(index===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle='#83c9e8';ctx.lineWidth=3;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+    data.forEach(function(d,index){
+      var x=plot.x+index*step+step/2;
+      var y=plot.y+plot.h-((d.uniquePlayers-totalMin)/(totalMax-totalMin))*plot.h;
+      ctx.beginPath();ctx.arc(x,y,3.2,0,Math.PI*2);ctx.fillStyle='#bcecff';ctx.fill();
+    });
+
+    ctx.fillStyle='#b9c4d6';ctx.textAlign='center';ctx.textBaseline='top';
+    data.forEach(function(d,index){
+      if(index===0||index===data.length-1||index%5===0){
+        var x=plot.x+index*step+step/2;
+        ctx.fillText(formatDate(d.date),x,height-margin.bottom+13);
+      }
+    });
+  }
+  function showAt(clientX,clientY){
+    if(!bounds||!data.length)return;
+    var rect=canvas.getBoundingClientRect();
+    var x=clientX-rect.left-bounds.plot.x;
+    var index=Math.max(0,Math.min(data.length-1,Math.floor(x/bounds.step)));
+    var point=data[index];
+    tooltip.innerHTML='<strong>'+formatDate(point.date)+'</strong><br>新規：'+point.newPlayers+'<br>累計：'+point.uniquePlayers;
+    tooltip.style.display='block';
+    var left=Math.max(4,Math.min(wrap.clientWidth-tooltip.offsetWidth-4,clientX-rect.left+12));
+    var top=Math.max(4,Math.min(wrap.clientHeight-tooltip.offsetHeight-4,clientY-rect.top-12));
+    tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+  }
+  canvas.addEventListener('pointermove',function(event){showAt(event.clientX,event.clientY);});
+  canvas.addEventListener('pointerleave',function(){tooltip.style.display='none';});
+  window.addEventListener('resize',draw);
+
+  function renderRows(series){
+    var body=document.getElementById('rows');
+    body.replaceChildren();
+    series.slice().reverse().forEach(function(point){
+      var row=document.createElement('tr');
+      [point.date,String(point.newPlayers),String(point.uniquePlayers)].forEach(function(value){
+        var cell=document.createElement('td');cell.textContent=value;row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+  async function load(){
+    status.textContent='計測値を読み込んでいます…';
+    try{
+      var response=await fetch(api,{cache:'no-store'});
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      var result=await response.json();
+      if(!Array.isArray(result.series))throw new Error('series_missing');
+      data=result.series;
+      document.getElementById('total').textContent=Number(result.uniquePlayers||0).toLocaleString('ja-JP');
+      document.getElementById('today').textContent=Number(data.length?data[data.length-1].newPlayers:0).toLocaleString('ja-JP');
+      renderRows(data);
+      draw();
+      status.textContent='日本時間の日付で集計しています。最終更新：'+new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+    }catch(error){
+      status.textContent='計測値を読み込めませんでした。時間をおいて「更新」を押してください。';
+    }
+  }
+  document.getElementById('refresh').addEventListener('click',load);
+  load();
+})();
+</script>
+</body>
+</html>
