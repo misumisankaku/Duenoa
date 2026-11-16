@@ -41,14 +41,35 @@ th:first-child,td:first-child{text-align:left}
 th{color:#e8d99f}
 footer{margin:18px 4px 0;color:#aeb9ca;font-size:12px}
 @media(max-width:620px){header{align-items:flex-start;flex-direction:column}.summary{gap:9px}.metric-card{padding:14px}.metric-card span{font-size:12px}.panel{padding:13px}canvas{height:300px}.legend{gap:10px;font-size:12px}button{min-height:42px}}
+
+[hidden]{display:none!important}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.login-panel{max-width:520px;margin:28px auto}
+.login-panel h2{margin-bottom:8px}
+.login-panel p{color:var(--muted)}
+.login-panel form{display:grid;gap:10px;margin-top:18px}
+.login-panel label{font-weight:800;color:#f3dfaa}
+.login-panel input{width:100%;min-height:46px;border:1px solid #8290aa;border-radius:10px;background:#0c1526;color:#fff5df;padding:10px 12px;font:16px system-ui}
+.login-panel button{min-height:46px;border-color:#e9c66b;background:linear-gradient(135deg,#94733a,#5b4628)}
 </style>
 </head>
 <body>
 <main>
 <header>
   <div><a href="./">☀️🌙 デュエノアへ戻る</a><h1>利用者数</h1><p>対戦を開始したブラウザの数を確認できます</p></div>
-  <button id="refresh" type="button">↻ 更新</button>
+  <div class="header-actions"><button id="refresh" type="button" hidden>↻ 更新</button><button id="logout" type="button" hidden>ログアウト</button></div>
 </header>
+<section id="login-panel" class="panel login-panel" hidden>
+  <h2>利用者グラフ（本人限定）</h2>
+  <p>閲覧パスワードを入力してください。</p>
+  <form id="login-form">
+    <label for="metrics-password">パスワード</label>
+    <input id="metrics-password" type="password" autocomplete="current-password" required>
+    <button type="submit">ログイン</button>
+  </form>
+  <div id="login-status" class="status" role="status" aria-live="polite"></div>
+</section>
+<div id="dashboard" hidden>
 <section class="summary" aria-label="利用者数の概要">
   <article class="metric-card"><span>累計ユニークブラウザ</span><strong id="total">—</strong></article>
   <article class="metric-card today"><span>今日、新しく計測したブラウザ</span><strong id="today">—</strong></article>
@@ -72,6 +93,8 @@ footer{margin:18px 4px 0;color:#aeb9ca;font-size:12px}
     <div style="overflow-x:auto"><table><thead><tr><th>日付</th><th>新しく計測した数</th><th>累計</th></tr></thead><tbody id="rows"></tbody></table></div>
   </details>
 </section>
+
+</div>
 <footer>集計対象は、匿名のブラウザIDを使って対戦を開始した利用者です。</footer>
 </main>
 <script>
@@ -187,10 +210,40 @@ footer{margin:18px 4px 0;color:#aeb9ca;font-size:12px}
       body.appendChild(row);
     });
   }
+    if(location.hostname.endsWith('.github.io')){
+    location.replace('https://my-gamma-lyart.vercel.app/metrics.html');
+    return;
+  }
+  var api='/api/player-metric';
+  var authApi='/api/metrics-auth';
+  var loginPanel=document.getElementById('login-panel');
+  var dashboard=document.getElementById('dashboard');
+  var loginStatus=document.getElementById('login-status');
+  var passwordInput=document.getElementById('metrics-password');
+  var loginForm=document.getElementById('login-form');
+  var refreshButton=document.getElementById('refresh');
+  var logoutButton=document.getElementById('logout');
+
+  function showLogin(message){
+    dashboard.hidden=true;
+    loginPanel.hidden=false;
+    refreshButton.hidden=true;
+    logoutButton.hidden=true;
+    loginStatus.textContent=message||'閲覧パスワードを入力してください。';
+  }
+
   async function load(){
     status.textContent='計測値を読み込んでいます…';
     try{
       var response=await fetch(api,{cache:'no-store'});
+      if(response.status===401){
+        showLogin('ログインしてください。');
+        return;
+      }
+      if(response.status===503){
+        showLogin('Vercelの環境変数 DUENOA_METRICS_PASSWORD を設定すると閲覧できます。');
+        return;
+      }
       if(!response.ok)throw new Error('HTTP '+response.status);
       var result=await response.json();
       if(!Array.isArray(result.series))throw new Error('series_missing');
@@ -198,13 +251,52 @@ footer{margin:18px 4px 0;color:#aeb9ca;font-size:12px}
       document.getElementById('total').textContent=Number(result.uniquePlayers||0).toLocaleString('ja-JP');
       document.getElementById('today').textContent=Number(data.length?data[data.length-1].newPlayers:0).toLocaleString('ja-JP');
       renderRows(data);
+      dashboard.hidden=false;
+      loginPanel.hidden=true;
+      refreshButton.hidden=false;
+      logoutButton.hidden=false;
       draw();
       status.textContent='日本時間の日付で集計しています。最終更新：'+new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
     }catch(error){
-      status.textContent='計測値を読み込めませんでした。時間をおいて「更新」を押してください。';
+      showLogin('計測値を読み込めませんでした。接続を確認して再度ログインしてください。');
     }
   }
-  document.getElementById('refresh').addEventListener('click',load);
+
+  loginForm.addEventListener('submit',async function(event){
+    event.preventDefault();
+    loginStatus.textContent='確認しています…';
+    try{
+      var response=await fetch(authApi,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({password:passwordInput.value})
+      });
+      if(response.status===401){
+        loginStatus.textContent='パスワードが違います。もう一度入力してください。';
+        passwordInput.select();
+        return;
+      }
+      if(response.status===503){
+        loginStatus.textContent='Vercelに DUENOA_METRICS_PASSWORD を設定してください。';
+        return;
+      }
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      passwordInput.value='';
+      await load();
+    }catch(error){
+      loginStatus.textContent='ログインできませんでした。時間をおいて再度お試しください。';
+    }
+  });
+  refreshButton.addEventListener('click',load);
+  logoutButton.addEventListener('click',async function(){
+    try{
+      await fetch(authApi,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({logout:true})});
+    }finally{
+      data=[];
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      showLogin('ログアウトしました。');
+    }
+  });
   load();
 })();
 </script>
