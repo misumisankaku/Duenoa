@@ -1290,6 +1290,153 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
   }
 }
 
+
+/* Phone landscape layout: battlefield and controls fit the wide screen */
+@media (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+  #starfall-cpu{padding:4px!important}
+  #starfall-cpu:has(#game:not([hidden])){
+    height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;
+    padding:4px 6px calc(4px + env(safe-area-inset-bottom))!important
+  }
+  #starfall-cpu #game{
+    display:grid!important;box-sizing:border-box!important;width:100%!important;
+    height:100dvh!important;min-height:0!important;max-height:100dvh!important;
+    grid-template-columns:minmax(0,1fr) clamp(188px,27vw,250px)!important;
+    grid-template-rows:minmax(0,1fr) 18px minmax(0,1fr) auto minmax(94px,28dvh) auto auto auto!important;
+    grid-template-areas:"enemy log" "divider log" "own log" "footer log" "hand log" "mulligan log" "rules log" "hint log"!important;
+    align-content:stretch!important;align-items:stretch!important;column-gap:7px!important;row-gap:3px!important;
+    overflow-x:hidden!important;overflow-y:auto!important;
+    padding:0 0 calc(4px + env(safe-area-inset-bottom))!important;
+    --battlefield-height:clamp(62px,18dvh,78px)!important;
+    --hand-card-height:clamp(96px,27dvh,112px)!important
+  }
+  #starfall-cpu #game>.top,
+  #starfall-cpu #game>.small[aria-label="攻撃と呪文のルール"],
+  #starfall-cpu #game>.hint{display:none!important}
+  #starfall-cpu #game>.zone.enemy{grid-area:enemy!important}
+  #starfall-cpu #game>.divider{grid-area:divider!important;min-height:18px!important;height:18px!important;padding:1px 4px!important;font-size:9px!important}
+  #starfall-cpu #game>.zone:not(.enemy){grid-area:own!important}
+  #starfall-cpu #game>.footer{grid-area:footer!important;min-height:20px!important;height:20px!important;padding:1px 4px!important;font-size:10px!important}
+  #starfall-cpu #game>.hand{
+    grid-area:hand!important;min-height:var(--hand-card-height)!important;height:var(--hand-card-height)!important;
+    justify-content:flex-start!important;gap:4px!important;padding:3px 2px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x proximity
+  }
+  #starfall-cpu #game>.hand .card{
+    flex:0 0 clamp(92px,12vw,108px)!important;width:clamp(92px,12vw,108px)!important;
+    height:calc(var(--hand-card-height) - 5px)!important;min-height:calc(var(--hand-card-height) - 5px)!important;
+    max-height:calc(var(--hand-card-height) - 5px)!important;padding:4px!important;gap:2px!important;scroll-snap-align:start
+  }
+  #starfall-cpu #game>.hand .card:first-child{margin-left:auto!important}
+  #starfall-cpu #game>.hand .card:last-child{margin-right:auto!important}
+  #starfall-cpu #game>.hand .card .name{min-height:18px!important;padding:2px 19px 1px 2px!important;font-size:8px!important;line-height:1.1!important}
+  #starfall-cpu #game>.hand .card .art{height:23px!important;min-height:23px!important;font-size:20px!important}
+  #starfall-cpu #game>.hand .card .ability{flex-basis:27px!important;height:27px!important;min-height:27px!important;max-height:27px!important;padding:2px!important;font-size:7px!important;line-height:1.05!important}
+  #starfall-cpu #game>.hand .card .keywords{flex-basis:13px!important;height:13px!important;min-height:13px!important;font-size:7px!important}
+  #starfall-cpu #game>.hand .card .stats{bottom:2px!important;padding:2px!important;font-size:8px!important}
+  #starfall-cpu #game>.mulligan-controls{grid-area:mulligan!important;gap:3px!important;padding:4px!important}
+  #starfall-cpu #game>.mulligan-controls .mulligan-status,
+  #starfall-cpu #game>.mulligan-controls .mulligan-help{flex:1 1 100%!important;margin:0!important;font-size:9px!important;line-height:1.2!important}
+  #starfall-cpu #game>.mulligan-controls button{flex:1 1 45%!important;min-height:34px!important;padding:4px!important;font-size:9px!important}
+  #starfall-cpu #game>.battle-sidebar{
+    grid-area:log!important;position:static!important;align-self:stretch!important;
+    display:flex!important;flex-direction:column!important;gap:5px!important;
+    width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;overflow-y:auto!important;padding:0!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.action-log{
+    flex:0 0 auto!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:"heading toggle" "controls controls" "feed feed"!important;
+    gap:4px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+    padding:5px!important;overflow:hidden!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.action-log>strong{grid-area:heading!important;align-self:center!important;font-size:10px!important}
+  #starfall-cpu #game #mobile-log-toggle{
+    display:inline-flex!important;grid-area:toggle!important;align-items:center!important;justify-content:center!important;
+    min-height:32px!important;padding:4px 7px!important;border:1px solid #a6ddff!important;border-radius:8px!important;
+    background:linear-gradient(135deg,#244868,#3b75a0)!important;color:#f6fcff!important;font:700 10px system-ui!important
+  }
+  #starfall-cpu #game .log-controls{
+    grid-area:controls!important;display:grid!important;grid-template-columns:1fr 1fr!important;
+    align-items:center!important;gap:4px!important;width:100%!important;padding:2px!important
+  }
+  #starfall-cpu #game .log-controls button{min-height:36px!important;padding:4px!important;font-size:10px!important}
+  #starfall-cpu #game .log-controls .game-volume-control{
+    grid-column:1/-1!important;justify-content:center!important;gap:4px!important;font-size:9px!important
+  }
+  #starfall-cpu #game .log-controls .game-volume-control input{width:min(24vw,110px)!important}
+  #starfall-cpu #game>.battle-sidebar>.action-log .battle-feed{display:none!important}
+  #starfall-cpu.mobile-log-expanded #game>.battle-sidebar>.action-log .battle-feed{
+    display:flex!important;grid-area:feed!important;flex:0 0 clamp(62px,16dvh,90px)!important;
+    width:100%!important;height:clamp(62px,16dvh,90px)!important;min-height:0!important;max-height:clamp(62px,16dvh,90px)!important;
+    overflow-y:auto!important;padding:4px!important;font-size:9px!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row){
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;margin:0!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row) button{
+    width:100%!important;min-width:0!important;min-height:40px!important;padding:5px 3px!important;font-size:10px!important;line-height:1.15!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.actions:not(.attack-confirm-row) #end-turn{grid-column:1/-1!important}
+  #starfall-cpu #game>.battle-sidebar>.attack-confirm-row{
+    position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+    transform:translate(-50%,-50%)!important;z-index:5000!important;width:min(92vw,400px)!important;
+    max-width:calc(100vw - 18px)!important;display:flex!important;flex-direction:column!important;gap:6px!important;padding:10px!important
+  }
+  #starfall-cpu #game>.battle-sidebar>.attack-confirm-row[hidden]{display:none!important}
+  #starfall-cpu #game>.battle-sidebar>.attack-confirm-row button{width:100%!important;min-height:42px!important;font-size:12px!important}
+  #starfall-cpu #game>.zone{
+    position:relative!important;box-sizing:border-box!important;min-height:0!important;height:auto!important;
+    margin:0!important;padding:2px 4px!important;overflow:visible!important
+  }
+  #starfall-cpu #game .person{
+    display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(70px,auto)!important;
+    grid-template-rows:auto!important;align-items:center!important;column-gap:4px!important;row-gap:0!important
+  }
+  #starfall-cpu #game #you-faction,#starfall-cpu #game #cpu-faction{
+    grid-column:1!important;grid-row:1!important;max-width:90px!important;font-size:9px!important;line-height:1!important
+  }
+  #starfall-cpu #game #you-life,#starfall-cpu #game #cpu-life{
+    grid-column:2!important;grid-row:1!important;font-size:10px!important;padding:3px 5px!important
+  }
+  #starfall-cpu #game #target-you-player,#starfall-cpu #game #target-cpu-player{grid-column:2!important;grid-row:2!important}
+  #starfall-cpu #game #cpu-mana,#starfall-cpu #game #mana{
+    grid-column:3!important;grid-row:1!important;justify-self:end!important;top:auto!important;
+    min-width:0!important;min-height:30px!important;padding:3px 6px!important;font-size:11px!important
+  }
+  #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{
+    box-sizing:border-box!important;display:flex!important;flex-wrap:nowrap!important;align-items:center!important;
+    justify-content:flex-start!important;gap:4px!important;height:var(--battlefield-height)!important;
+    min-height:var(--battlefield-height)!important;max-height:var(--battlefield-height)!important;
+    padding:2px 76px 2px 2px!important;overflow-x:auto!important;overflow-y:hidden!important
+  }
+  #starfall-cpu #game .material-card{
+    flex:0 0 clamp(62px,9vw,78px)!important;width:clamp(62px,9vw,78px)!important;
+    height:clamp(54px,calc(var(--battlefield-height) - 6px),70px)!important;
+    min-height:clamp(54px,calc(var(--battlefield-height) - 6px),70px)!important;
+    max-height:clamp(54px,calc(var(--battlefield-height) - 6px),70px)!important;
+    padding:2px!important;gap:1px!important;flex-shrink:0!important
+  }
+  #starfall-cpu #game .material-card .material-art{height:16px!important;min-height:16px!important;font-size:14px!important}
+  #starfall-cpu #game .material-card .material-ability{
+    flex-basis:18px!important;height:18px!important;min-height:18px!important;max-height:18px!important;
+    padding:1px!important;font-size:6px!important;line-height:1!important
+  }
+  #starfall-cpu #game .material-card .material-name{font-size:7px!important;line-height:1!important}
+  #starfall-cpu #game .material-card .material-stats{bottom:1px!important;padding:1px!important;font-size:7px!important}
+  #starfall-cpu #game>.zone.enemy>#cpu-meta,
+  #starfall-cpu #game>.zone:not(.enemy)>#you-meta{
+    position:absolute!important;inset:auto 5px 4px auto!important;transform:none!important;
+    display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-end!important;
+    gap:3px!important;width:auto!important;min-width:0!important;max-width:72px!important;min-height:0!important;
+    margin:0!important;padding:0!important;z-index:3!important
+  }
+  #starfall-cpu #game .zone.enemy>#cpu-meta .opponent-count,
+  #starfall-cpu #game>.zone:not(.enemy)>#you-meta .player-count{
+    flex:1 1 0!important;width:auto!important;height:23px!important;min-height:23px!important;max-height:23px!important;
+    padding:2px!important;font-size:7px!important;white-space:nowrap!important
+  }
+}
+
 </style>
 <div class="card-pool-overlay" id="card-pool-overlay" hidden><section class="card-pool-dialog" role="dialog" aria-modal="true" aria-labelledby="card-pool-title"><div class="card-pool-header"><div><h2 id="card-pool-title">🃏 カードプール</h2><p>カード名と効果を一覧で確認できます。</p></div><button id="close-card-pool" type="button">閉じる</button></div><div class="card-pool-controls"><label for="pool-faction">デッキ<select id="pool-faction"><option value="all">すべて</option><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label class="pool-search-label" for="pool-search">カード名・効果を検索<input id="pool-search" type="search" placeholder="例：守護、ドロー、竜"></label><span class="card-pool-count" id="card-pool-count" aria-live="polite"></span></div><div class="card-pool-grid" id="card-pool-grid"></div></section></div><div class="rules-overlay" id="rules-overlay" hidden><section class="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title"><h2 id="rules-title">はじめての方へ · あそびかた</h2><ul><li>ライフの上限は20です。表示例：20/20。相手のライフを0にすると勝ちです。</li><li>初回は先攻1マナ・後攻2マナ。2回目の自分のターンは先攻2マナ・後攻2マナ。3回目以降は自分のターンごとに1増え、最大10です。</li><li>デッキは30枚です。各デッキ固有の固定10種類を各1枚含み、残り20枚は同じデッキのカードからランダムに加えます。同じカードは最大2枚で、順番とランダム枠は対戦ごとに変わります。</li><li>初期手札で引き直したいカードを選び、マリガンは各プレイヤー1回だけ使えます。</li><li>各ターンに1枚引きます。山札が空のときに引くと負けです。</li><li>マテリアルはそれぞれ1回攻撃できます。召喚したターンは攻撃できません（速攻を除く）。</li><li>呪文は使用確認ですぐ使えます。対象指定の呪文は対象を選んでください。</li><li>通常のマテリアルは攻撃を防ぎません。守護だけがライフを守り、破壊されるまで効果が続きます。</li><li>相手に守護がいなければ、他のマテリアルがいても「全員で攻撃する」で一斉攻撃できます。攻撃は画面中央の「攻撃の確認」で実行します。</li><li>自分のターンは2分以内に操作します。時間切れは自動でターン終了です。</li></ul><button id="close-rules" type="button">ゲームを始める</button></section></div>
 <div class="deck-setup" id="deck-setup" aria-label="対戦デッキを選択"><h1 class="standby-title" aria-label="太陽と月 デュエノア"><span class="title-celestial" aria-hidden="true"><span class="title-sun">☀️</span><span class="title-moon">🌙</span></span> デュエノア</h1><label for="you-name">ホスト<input id="you-name" type="text" maxlength="16" autocomplete="nickname" value="あなた"></label><label for="you-deck">あなたのデッキ<select id="you-deck"><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label id="cpu-name-label" for="cpu-name">ゲスト<input id="cpu-name" type="text" maxlength="16" value="CPU"></label><label for="cpu-deck">相手のデッキ<select id="cpu-deck"><option value="flame">🔴 炎</option><option value="earth" selected>🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><label id="cpu-difficulty-label" for="cpu-difficulty">CPUの難易度<select id="cpu-difficulty"><option value="easy">🌱 かんたん</option><option value="normal" selected>⚔️ ふつう</option><option value="hard">🔥 むずかしい</option></select></label><div class="small" id="matchup">それぞれのデッキを選んでください。</div><button class="card-pool-open" id="show-card-pool" type="button">🃏 カードプールを見る</button><button class="play-start" id="play-start" type="button" hidden>オンライン対戦を開始</button><button class="play-start cpu-play-start" id="cpu-start" type="button">CPU戦を開始</button></div><section class="online-panel" id="online-panel" aria-label="オンライン対戦"><strong>🌐 オンライン対戦</strong><div class="online-row"><button id="create-room" type="button">部屋を作る</button><input id="room-code" type="text" placeholder="4桁の部屋コード" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off"><button id="join-room" type="button">コードで参加</button><button id="spectate-room" type="button">観戦する</button><button id="copy-room" type="button" disabled>コードをコピー</button><button id="copy-room-link" type="button" hidden disabled>招待リンクをコピー</button><button id="leave-room" type="button" hidden>対戦を終了</button><button id="ready-up" type="button" hidden disabled>準備OK</button></div><div class="online-status" id="online-status" aria-live="polite">4桁の部屋コードを共有して、オンライン対戦や観戦ができます。</div><div class="online-status" id="ready-status" hidden aria-live="polite"></div><input id="invite-url" class="invite-url" type="text" readonly hidden aria-label="対戦招待リンク"></section><audio id="bgm-track" src="assets/aqua-material-theme.mp3" preload="auto" loop></audio><audio id="coin-sfx" src="assets/coin-drop.mp3" preload="auto"></audio><div class="sound-controls" aria-label="サウンド設定"><button id="toggle-bgm" type="button" aria-pressed="true">🎵 BGM ON</button><label class="volume-control" for="bgm-volume">🎚 BGM音量 <input id="bgm-volume" type="range" min="0" max="100" value="22"><span id="bgm-volume-value">22%</span></label><button id="toggle-sfx" type="button" aria-pressed="true">🔔 効果音 ON</button></div><div id="game" hidden><div class="coin-stage" id="coin-stage"><div class="coin" id="coin" aria-label="コイン"><span class="coin-face sun" aria-hidden="true">☀️</span><span class="coin-face moon" aria-hidden="true">🌙</span></div><div><strong>先攻をコイントスで決めよう</strong><div class="coin-result" id="coin-result" aria-live="polite">あなたかCPUが先攻です</div></div><button id="flip" type="button">🪙 コイントス</button></div><div class="result-overlay" id="result-overlay" hidden><section class="result-dialog" role="dialog" aria-modal="true" aria-labelledby="result-title"><div class="result-mark">🏆</div><h2 id="result-title"></h2><p id="result-detail"></p><div class="result-actions"><button id="result-rematch" type="button">再戦</button><button id="result-return" type="button">初めの画面に戻る</button></div></section></div><div class="top"><h2>☀️🌙 デュエノア</h2><span class="tag" id="phase">あなたのターン · 2ターン目</span></div><div class="turn-announcement" id="turn-announcement" hidden role="status" aria-live="assertive">あなたのターンです</div>
