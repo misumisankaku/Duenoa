@@ -1,6 +1,6 @@
 'use strict';
 
-const { createHash } = require('crypto');
+const { createHash, createHmac, timingSafeEqual } = require('crypto');
 
 const ALLOWED_ORIGINS = new Set([
   'https://misumisankaku.github.io',
@@ -10,6 +10,7 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 const PLAYER_SET_KEY = 'duenoa:metrics:unique-player-hashes:v1';
 const DAILY_PREFIX = 'duenoa:metrics:unique-player-additions:v1:';
+const SESSION_COOKIE = 'duenoa_metrics_session';
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function setHeaders(req, res) {
@@ -21,6 +22,23 @@ function setHeaders(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+}
+
+function hasValidMetricsSession(req, password) {
+  const cookie = String(req.headers.cookie || '').split(';').map(part => part.trim())
+    .find(part => part.startsWith(SESSION_COOKIE + '='));
+  if (!cookie) return false;
+  const value = cookie.slice(SESSION_COOKIE.length + 1);
+  const separator = value.indexOf('.');
+  if (separator < 1) return false;
+  const expiry = Number(value.slice(0, separator));
+  const supplied = Buffer.from(value.slice(separator + 1), 'hex');
+  if (!Number.isInteger(expiry) || expiry <= Math.floor(Date.now() / 1000) || supplied.length !== 32) return false;
+  const expected = createHmac('sha256', password)
+    .update('duenoa-metrics-session-v1:' + expiry)
+    .digest();
+  return timingSafeEqual(supplied, expected);
 }
 
 async function redisCommand(url, token, command) {
@@ -74,6 +92,12 @@ module.exports = async function playerMetric(req, res) {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
+  if (req.method === 'GET') {
+    const password = process.env.DUENOA_METRICS_PASSWORD;
+    if (!password) return res.status(503).json({ error: 'metrics_auth_not_configured' });
+    if (!hasValidMetricsSession(req, password)) return res.status(401).json({ error: 'authentication_required' });
+  }
+
   const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
   if (!url || !token) {
@@ -118,12 +142,7 @@ module.exports = async function playerMetric(req, res) {
     const added = await redisCommand(url, token, [
       'EVAL', script, 2, PLAYER_SET_KEY, dayKey, hashedId,
     ]);
-    const count = await redisCommand(url, token, ['SCARD', PLAYER_SET_KEY]);
-    return res.status(200).json({
-      metric: 'unique_browsers_that_started_a_game',
-      uniquePlayers: Number(count) || 0,
-      firstGameFromBrowser: Number(added) === 1,
-    });
+    return res.status(200).json({ recorded: true, firstGameFromBrowser: Number(added) === 1 });
   } catch (error) {
     console.error('Player metric request failed:', error);
     return res.status(500).json({ error: 'metric_unavailable' });
