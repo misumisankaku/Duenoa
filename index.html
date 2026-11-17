@@ -2125,9 +2125,60 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
  min-height:clamp(106px,calc(var(--battlefield-height) - 20px),198px)!important;
  max-height:clamp(106px,calc(var(--battlefield-height) - 20px),198px)!important
 }
+
+#starfall-cpu .rules-dialog{width:min(100%,860px);max-height:calc(100dvh - 32px);padding:clamp(16px,2.4vw,28px)}
+#starfall-cpu .rules-dialog h2{font-size:clamp(22px,3vw,30px);margin-bottom:8px}
+#starfall-cpu .rule-lead{text-align:center;margin:0 auto 14px;font-weight:700;line-height:1.65}
+#starfall-cpu .rule-damage-note{margin:0 0 16px;padding:13px 16px;border:1px solid #78c7bb;border-radius:14px;background:#102e35;color:#e6fff6;line-height:1.6}
+#starfall-cpu .rules-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#starfall-cpu .rule-card{padding:12px 14px;border:1px solid #b79b61;border-radius:14px;background:#18243a;color:#f4ead6}
+#starfall-cpu .rule-card h3{margin:0 0 5px;color:#f4d982;font-size:16px}
+#starfall-cpu .rule-card ul{margin:0;padding-left:1.25em;font-size:13px;line-height:1.6}
+#starfall-cpu .rule-card li+li{margin-top:3px}
+#starfall-cpu .rules-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+#starfall-cpu .rules-actions button{margin:0;min-width:150px}
+@media(max-width:600px){#starfall-cpu .rules-grid{grid-template-columns:1fr}#starfall-cpu .rule-card{padding:10px 12px}#starfall-cpu .rules-dialog{max-height:calc(100dvh - 20px)}}
 </style>
 <div id="rotate-screen-overlay" role="status" aria-live="polite"><section class="rotate-screen-card"><div class="rotate-phone-icon" aria-hidden="true">📱↻</div><h2>横向きでプレイ</h2><p>スマートフォンを横向きにすると、対戦画面が表示されます。</p></section></div>
-<div class="card-pool-overlay" id="card-pool-overlay" hidden><section class="card-pool-dialog" role="dialog" aria-modal="true" aria-labelledby="card-pool-title"><div class="card-pool-header"><div><h2 id="card-pool-title">🃏 カードプール</h2><p>カード名と効果を一覧で確認できます。</p></div><button id="close-card-pool" type="button">閉じる</button></div><div class="card-pool-controls"><label for="pool-faction">デッキ<select id="pool-faction"><option value="all">すべて</option><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><div class="pool-filter-tabs" role="tablist" aria-label="カードの絞り込み方法"><button class="pool-filter-tab active" type="button" role="tab" aria-selected="true" data-pool-mode="word">ワード</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="ability">能力</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="cost">コスト</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="attack">攻撃力</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="defense">守備力</button></div><label class="pool-search-label" id="pool-search-control" for="pool-search">カード名・効果を検索<input id="pool-search" type="search" placeholder="例：守護、ドロー、竜"></label><label class="pool-search-label" id="pool-value-control" for="pool-value-filter" hidden><span id="pool-value-label">能力</span><select id="pool-value-filter"></select></label><span class="card-pool-count" id="card-pool-count" aria-live="polite"></span></div><div class="card-pool-grid" id="card-pool-grid"></div></section></div><div class="rules-overlay" id="rules-overlay" hidden><section class="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title"><h2 id="rules-title">はじめての方へ · あそびかた</h2><p class="rule-damage-note">💚 ダメージのルール：マテリアルが受けたダメージは、持ち主の次のターン開始時に最大体力まで回復します。ターンをまたいでダメージは残りません。</p><ul><li>ライフの上限は20です。表示例：20/20。相手のライフを0にすると勝ちです。</li><li>カードを出すには、カードの右上にある数字と同じ数の力が必要です。最初は先に動く人が1、後から動く人が2。次の番はどちらも2で、その後は自分の番ごとに1ずつ増えて最大10です。</li><li>デッキは30枚です。各デッキ固有の固定10種類を各1枚含み、残り20枚は同じデッキのカードからランダムに加えます。同じカードは最大2枚で、順番とランダム枠は対戦ごとに変わります。</li><li>プレイ人数の集計では、同じブラウザーからの重複を防ぐためランダムなIDを保存します。プレイヤー名やメールアドレスは記録しません。</li><li>最初にもらった手札から、替えたいカードを選んで一度だけ引き直せます。</li><li>自分の番のはじめに1枚引きます。山札が空のときに引くと負けです。</li><li>マテリアルはそれぞれ1回攻撃できます。召喚したターンは攻撃できません（速攻を除く）。</li><li>呪文は使用確認ですぐ使えます。対象指定の呪文は対象を選んでください。</li><li>通常のマテリアルは攻撃を防ぎません。守護だけがライフを守り、破壊されるまで効果が続きます。</li><li>相手に守護がいなければ、他のマテリアルがいても「全員で攻撃する」で一斉攻撃できます。攻撃は画面中央の「攻撃の確認」で実行します。</li><li>自分のターンは2分以内に操作します。時間切れは自動でターン終了です。</li></ul><button id="launch-tutorial-from-rules" type="button">📘 チュートリアルを見る</button><button id="close-rules" type="button">ゲームを始める</button></section></div>
+<div class="card-pool-overlay" id="card-pool-overlay" hidden><section class="card-pool-dialog" role="dialog" aria-modal="true" aria-labelledby="card-pool-title"><div class="card-pool-header"><div><h2 id="card-pool-title">🃏 カードプール</h2><p>カード名と効果を一覧で確認できます。</p></div><button id="close-card-pool" type="button">閉じる</button></div><div class="card-pool-controls"><label for="pool-faction">デッキ<select id="pool-faction"><option value="all">すべて</option><option value="flame">🔴 炎</option><option value="earth">🟢 森</option><option value="lake">🔵 湖</option><option value="swamp">⬛ 沼</option><option value="city">🏙️ 街</option><option value="briar">🟣 茨</option></select></label><div class="pool-filter-tabs" role="tablist" aria-label="カードの絞り込み方法"><button class="pool-filter-tab active" type="button" role="tab" aria-selected="true" data-pool-mode="word">ワード</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="ability">能力</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="cost">コスト</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="attack">攻撃力</button><button class="pool-filter-tab" type="button" role="tab" aria-selected="false" data-pool-mode="defense">守備力</button></div><label class="pool-search-label" id="pool-search-control" for="pool-search">カード名・効果を検索<input id="pool-search" type="search" placeholder="例：守護、ドロー、竜"></label><label class="pool-search-label" id="pool-value-control" for="pool-value-filter" hidden><span id="pool-value-label">能力</span><select id="pool-value-filter"></select></label><span class="card-pool-count" id="card-pool-count" aria-live="polite"></span></div><div class="card-pool-grid" id="card-pool-grid"></div></section></div><div class="rules-overlay" id="rules-overlay" hidden><section class="rules-dialog" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+<h2 id="rules-title">📖 デュエノアの対戦ルール</h2>
+<p class="rule-lead">相手のライフを0にすれば勝利です。まずは「ダメージの回復」「マナ」「攻撃」の3つを覚えましょう。</p>
+<p class="rule-damage-note"><strong>💚 ダメージはターンをまたぎません</strong><br>マテリアルが受けたダメージは、その持ち主の次のターン開始時に回復し、元の体力に戻ります。</p>
+<div class="rules-grid">
+<section class="rule-card"><h3>1. 対戦の準備</h3><ul>
+<li>ライフは20から始まり、上限も20です。回復しても20を超えません。</li>
+<li>デッキは30枚。デッキごとの固定カード10枚と、同じデッキから選ばれるランダムな20枚で作られます。</li>
+<li>同じカードは最大2枚です。カードの順番とランダムなカードは対戦ごとに変わります。同じデッキ同士でも手札は別々です。</li>
+<li>コイントス で先攻・後攻が自動で決まります。最初の手札は5枚です。</li>
+</ul></section>
+<section class="rule-card"><h3>2. 手札と山札</h3><ul>
+<li>対戦開始前に、手札から好きなカードを選んで一度だけ引き直せます。制限時間内に確定してください。</li>
+<li>自分のターン開始時に1枚引きます。手札は最大8枚で、上限を超える分は引けません。</li>
+<li>山札が0枚の状態でカードを引くと敗北します。</li>
+</ul></section>
+<section class="rule-card"><h3>3. マナとターン</h3><ul>
+<li>カード右上の数字が、そのカードを使うために必要なマナです。ターン開始時にマナは回復します。</li>
+<li>先攻は1ターン目に1マナ、2ターン目に2マナ。後攻は1・2ターン目とも2マナです。</li>
+<li>3ターン目からは自分のターンごとに最大マナが1ずつ増え、10マナが上限です。</li>
+</ul></section>
+<section class="rule-card"><h3>4. マテリアルと攻撃</h3><ul>
+<li>場に出せるマテリアルは各プレイヤー最大5体です。</li>
+<li>自分のマテリアルは、それぞれのターンに1回攻撃できます。召喚したターンは攻撃できませんが、「速攻」があれば攻撃できます。</li>
+<li>攻撃する自分のマテリアルを選び、攻撃先を選んでから「攻撃を確認」を押します。</li>
+<li>相手に「守護」がいる間は、通常の攻撃で相手のライフを狙えません。相手の場に守護がいなければ、攻撃できる仲間全員で直接攻撃できます。</li>
+</ul></section>
+<section class="rule-card"><h3>5. 呪文と能力</h3><ul>
+<li>呪文は必要なマナがあれば使えます。対象が必要な呪文は、対象を選んでから「使用」を押します。</li>
+<li>カードに書かれた効果は、そのカードごとに異なります。使う前にカードの説明を確認しましょう。</li>
+<li>「守護」は持ち主のライフを守り、そのマテリアルが場にいる間続きます。カードに「守護を無視」とある効果は例外です。</li>
+</ul></section>
+<section class="rule-card"><h3>6. 制限時間</h3><ul>
+<li>手札の引き直しと各ターンには、それぞれ2分の制限時間があります。</li>
+<li>時間切れになると、手札はそのまま確定し、自分のターン中ならターンが終了します。</li>
+</ul></section>
+</div>
+<div class="rules-actions"><button id="launch-tutorial-from-rules" type="button">📘 チュートリアルを見る</button><button id="close-rules" type="button">対戦画面へ</button></div>
+</section></div>
 
 <div class="tutorial-overlay" id="tutorial-overlay" hidden>
   <section class="tutorial-dialog" role="dialog" aria-modal="true" aria-labelledby="tutorial-title" aria-describedby="tutorial-body">
