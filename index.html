@@ -2628,20 +2628,23 @@ render();
 #starfall-cpu #game .material-card .material-stats{position:absolute;left:6px;right:6px;bottom:4px;z-index:5;display:grid;place-items:center;height:23px;min-height:23px;margin:0;padding:2px 4px;border:1px solid #f1d474;border-radius:7px;background:#0a1422f2;color:#fff2bf;font-size:12px;font-weight:900;line-height:1;text-shadow:0 1px 2px #000;opacity:1!important}
 #starfall-cpu #game .material-card .material-status{z-index:6;color:#fff1c6;background:#111b2ded}
 @media(max-height:760px) and (min-width:561px){
- #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{height:clamp(88px,14vh,106px)!important;max-height:clamp(88px,14vh,106px)!important}
- #starfall-cpu #game .material-card{height:clamp(88px,14vh,106px)!important;max-height:clamp(88px,14vh,106px)!important}
+ #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{height:clamp(88px,14vh,106px)!important;min-height:0!important;max-height:clamp(88px,14vh,106px)!important;padding-top:0!important;padding-bottom:0!important}
+ #starfall-cpu #game .material-card{height:clamp(88px,14vh,106px)!important;min-height:clamp(88px,14vh,106px)!important;max-height:clamp(88px,14vh,106px)!important}
  #starfall-cpu #game .material-card .material-art{height:clamp(22px,3.8vh,30px)!important;min-height:clamp(22px,3.8vh,30px)!important;font-size:25px!important}
  #starfall-cpu #game .material-card .material-ability{flex-basis:clamp(20px,3.2vh,26px);height:clamp(20px,3.2vh,26px);min-height:clamp(20px,3.2vh,26px);max-height:clamp(20px,3.2vh,26px);font-size:8px}
 }
 @media(max-height:600px) and (min-width:561px){
  #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{height:82px!important;max-height:82px!important}
- #starfall-cpu #game .material-card{height:82px!important;max-height:82px!important}
- #starfall-cpu #game .material-card .material-art{height:22px!important;min-height:22px!important;font-size:20px!important}
- #starfall-cpu #game .material-card .material-ability{flex-basis:19px;height:19px;min-height:19px;max-height:19px;font-size:7px}
+ #starfall-cpu #game .material-card{height:82px!important;min-height:82px!important;max-height:82px!important}
+ #starfall-cpu #game .material-card .material-art{height:18px!important;min-height:18px!important;font-size:18px!important}
+ #starfall-cpu #game .material-card .material-name{font-size:9px}
+ #starfall-cpu #game .material-card .material-keywords{min-height:9px;font-size:8px}
+ #starfall-cpu #game .material-card .material-ability{flex-basis:12px;height:12px;min-height:12px;max-height:12px;padding:1px;font-size:7px}
+ #starfall-cpu #game .material-card .material-stats{height:18px;min-height:18px;font-size:10px}
 }
 @media(max-width:560px){
- #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{height:clamp(72px,12vh,98px)!important;max-height:clamp(72px,12vh,98px)!important}
- #starfall-cpu #game .material-card{height:clamp(72px,12vh,98px)!important;max-height:clamp(72px,12vh,98px)!important;padding:3px!important;gap:1px!important}
+ #starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{height:clamp(98px,16vh,118px)!important;min-height:0!important;max-height:clamp(98px,16vh,118px)!important;padding-top:0!important;padding-bottom:0!important}
+ #starfall-cpu #game .material-card{height:clamp(98px,16vh,118px)!important;min-height:clamp(98px,16vh,118px)!important;max-height:clamp(98px,16vh,118px)!important;padding:3px!important;gap:1px!important}
  #starfall-cpu #game .material-card .material-art{height:clamp(18px,3.2vh,26px)!important;min-height:clamp(18px,3.2vh,26px)!important;font-size:20px!important}
  #starfall-cpu #game .material-card .material-name{font-size:9px}
  #starfall-cpu #game .material-card .material-keywords{min-height:9px;font-size:8px}
