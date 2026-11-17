@@ -2262,7 +2262,26 @@ function animatePendingSpellCasts(){if(!pendingSpellCastQueue.length)return;cons
 function animateLastAttack(hit=S.lastAttack){if(!hit)return;root.querySelectorAll('.life-hit').forEach(x=>x.classList.remove('life-hit'));const attacker=root.querySelector('#'+hit.attackerSide+'-field .unit[data-uid="'+hit.attackerUid+'"]');if(attacker){void attacker.offsetWidth;attacker.classList.add(hit.attackerSide==='cpu'?'cpu-attack-motion':'attack-motion');}if(hit.targetUid!==null){const target=root.querySelector('#'+hit.targetSide+'-field .unit[data-uid="'+hit.targetUid+'"]');if(target){void target.offsetWidth;target.classList.add('hit-motion');spawnCombatFxAtElement(target,'impact',hit.damage||1);}}else{const life=el('#'+hit.targetSide+'-life');if(life){void life.offsetWidth;life.classList.add('life-hit');spawnCombatFxAtElement(life,'impact',hit.damage||1);}}const feed=el('#battle-feed');if(feed){feed.classList.remove('battle-pop');void feed.offsetWidth;feed.classList.add('battle-pop');setTimeout(()=>feed.classList.remove('battle-pop'),420);}}
 function cardHasTargets(card,side='you'){if(card?.targetRule==='enemyCreature')return sideBoard(side==='you'?'cpu':'you').some(unit=>unit.hp>0);if(card?.targetRule==='creature')return S.youBoard.concat(S.cpuBoard).some(unit=>unit.hp>0);return true;}
 function cardRequiresTarget(card,side='you'){return !!card?.targetRule&&(card.kind!=='creature'||cardHasTargets(card,side));}
-function cardButton(c){const b=document.createElement('button');b.type='button';b.dataset.uid=String(c.uid);const mulliganMode=S.phase==='mulligan'&&!S.youMulliganDone;b.className='card'+(c.kind==='spell'?' magic':'')+(c.faction?' faction-'+c.faction:'')+(S.selected?.uid===c.uid?' selected':'')+(S.mulliganSelected.includes(c.uid)?' mulligan-selected':'');b.disabled=mulliganMode?NET.waitingAction:(S.phase!=='you'||S.ended||c.cost>S.youMana||NET.waitingAction);b.setAttribute('aria-pressed',String(mulliganMode?S.mulliganSelected.includes(c.uid):S.selected?.uid===c.uid));const badges=(c.haste?'<span class="keyword-badge haste">⚡ 速攻</span>':'')+(c.guard?'<span class="keyword-badge guard">🛡️ 守護</span>':'');const parts=cardTextParts(c);b.innerHTML='<span class="cost">'+c.cost+'</span><div class="art">'+c.icon+'</div><div class="name">'+c.name+'</div><div class="keywords">'+badges+'</div><div class="ability"></div><div class="stats">'+(c.kind==='creature'?'⚔️ '+c.atk+'　💛 '+c.hp:'呪文')+'</div><div class="desc"></div>';b.querySelector('.ability').textContent=parts.ability;b.querySelector('.desc').textContent=parts.flavor;b.addEventListener('click',()=>{if(NET.spectating)return;if(S.phase==='mulligan'){if(S.youMulliganDone||NET.waitingAction)return;const i=S.mulliganSelected.indexOf(c.uid);if(i>=0)S.mulliganSelected.splice(i,1);else S.mulliganSelected.push(c.uid);S.log=S.mulliganSelected.length+'枚を引き直すカードに選択中。';render();return;}S.selected=c;S.attackUid=null;S.attackTargetUid=null;S.attackTargetFace=false;S.attackAllReady=false;S.targetUid=null;S.targetSide=null;S.targetPlayerSide=null;S.targetingArmed=c.kind==='spell'&&!!c.targetRule;S.log=c.kind==='creature'&&c.targetRule?(cardRequiresTarget(c,'you')?'対象を選んでください。召喚時効果の対象にするマテリアルを選択してください。':'対象となるマテリアルがいないため、効果なしで召喚できます。'):c.targetRule==='any'?(c.kind==='spell'?'対象を選んでください。選んだあと「使用」を押します。':'プレイヤーまたはマテリアルを対象に選んでください。'):c.targetRule?(c.kind==='spell'?'対象を選んでください。選んだあと「使用」を押します。':'対象を選んでください。'):c.kind==='spell'?'呪文を選択中。使用を確認で使います。':c.name+'を選択中。召喚を確認で場に出します。';render();});return b;}
+function cardButton(c){const b=document.createElement('button');b.type='button';b.dataset.uid=String(c.uid);const mulliganMode=S.phase==='mulligan'&&!S.youMulliganDone;b.className='card'+(c.kind==='spell'?' magic':'')+(c.faction?' faction-'+c.faction:'')+(S.selected?.uid===c.uid?' selected':'')+(S.mulliganSelected.includes(c.uid)?' mulligan-selected':'');b.disabled=mulliganMode?NET.waitingAction:(S.phase!=='you'||S.ended||c.cost>S.youMana||NET.waitingAction);b.draggable=!b.disabled&&!mulliganMode;b.setAttribute('aria-pressed',String(mulliganMode?S.mulliganSelected.includes(c.uid):S.selected?.uid===c.uid));const badges=(c.haste?'<span class="keyword-badge haste">⚡ 速攻</span>':'')+(c.guard?'<span class="keyword-badge guard">🛡️ 守護</span>':'');const parts=cardTextParts(c);b.innerHTML='<span class="cost">'+c.cost+'</span><div class="art">'+c.icon+'</div><div class="name">'+c.name+'</div><div class="keywords">'+badges+'</div><div class="ability"></div><div class="stats">'+(c.kind==='creature'?'⚔️ '+c.atk+'　💛 '+c.hp:'呪文')+'</div><div class="desc"></div>';b.querySelector('.ability').textContent=parts.ability;b.querySelector('.desc').textContent=parts.flavor;b.addEventListener('dragstart',event=>{if(!b.draggable){event.preventDefault();return;}draggedHandCardUid=String(c.uid);event.dataTransfer?.setData('text/plain',draggedHandCardUid);if(event.dataTransfer)event.dataTransfer.effectAllowed='move';b.classList.add('dragging');});b.addEventListener('dragend',()=>{draggedHandCardUid=null;b.classList.remove('dragging');el('#you-field').classList.remove('dnd-drop-target');});b.addEventListener('click',()=>{if(NET.spectating)return;if(S.phase==='mulligan'){if(S.youMulliganDone||NET.waitingAction)return;const i=S.mulliganSelected.indexOf(c.uid);if(i>=0)S.mulliganSelected.splice(i,1);else S.mulliganSelected.push(c.uid);S.log=S.mulliganSelected.length+'枚を引き直すカードに選択中。';render();return;}S.selected=c;S.attackUid=null;S.attackTargetUid=null;S.attackTargetFace=false;S.attackAllReady=false;S.targetUid=null;S.targetSide=null;S.targetPlayerSide=null;S.targetingArmed=c.kind==='spell'&&!!c.targetRule;S.log=c.kind==='creature'&&c.targetRule?(cardRequiresTarget(c,'you')?'対象を選んでください。召喚時効果の対象にするマテリアルを選択してください。':'対象となるマテリアルがいないため、効果なしで召喚できます。'):c.targetRule==='any'?(c.kind==='spell'?'対象を選んでください。選んだあと「使用」を押します。':'プレイヤーまたはマテリアルを対象に選んでください。'):c.targetRule?(c.kind==='spell'?'対象を選んでください。選んだあと「使用」を押します。':'対象を選んでください。'):c.kind==='spell'?'呪文を選択中。使用を確認で使います。':c.name+'を選択中。召喚を確認で場に出します。';render();});return b;}
+let draggedHandCardUid=null;
+const ownDropField=el('#you-field');
+ownDropField.addEventListener('dragenter',event=>{if(!draggedHandCardUid)return;event.preventDefault();ownDropField.classList.add('dnd-drop-target');});
+ownDropField.addEventListener('dragover',event=>{if(!draggedHandCardUid)return;event.preventDefault();if(event.dataTransfer)event.dataTransfer.dropEffect='move';ownDropField.classList.add('dnd-drop-target');});
+ownDropField.addEventListener('dragleave',event=>{if(!ownDropField.contains(event.relatedTarget))ownDropField.classList.remove('dnd-drop-target');});
+ownDropField.addEventListener('drop',event=>{
+ const uid=draggedHandCardUid||event.dataTransfer?.getData('text/plain');
+ if(!uid)return;
+ event.preventDefault();
+ draggedHandCardUid=null;
+ ownDropField.classList.remove('dnd-drop-target');
+ const card=S.youHand.find(item=>String(item.uid)===String(uid));
+ if(!card||NET.spectating||S.phase!=='you'||S.ended||NET.waitingAction||card.cost>S.youMana)return;
+ const handButton=Array.from(el('#hand').querySelectorAll('.card[data-uid]')).find(button=>button.dataset.uid===String(uid));
+ if(!handButton)return;
+ handButton.click();
+ const canPlayOnDrop=card.kind==='creature'?!cardRequiresTarget(card,'you'):!card.targetRule;
+ if(canPlayOnDrop)requestAnimationFrame(()=>{if(S.selected?.uid===card.uid&&S.phase==='you'&&!S.ended&&!NET.waitingAction)el('#confirm').click();});
+});
 function unitButton(u,side){
   const b=document.createElement('button'),parts=cardTextParts(u),effect=parts.ability||'能力なし。';b.type='button';b.className='unit material-card '+(u.faction?'unit-'+u.faction+' ':'')+(u.frozen?'state-frozen ':'')+(u.haste&&!u.hasteWindSpent?'state-haste ':'')+(u.guard?'state-guard ':'')+(u.tapped?'tapped ':'')+(S.attackUid===u.uid?'selected ':'')+((S.targetUid===u.uid&&S.targetSide===side)||(S.attackTargetUid===u.uid&&side==='cpu')?'targeted':'');b.dataset.uid=String(u.uid);b.dataset.side=side;b.dataset.atk=String(u.atk);b.dataset.hp=String(u.hp);b.dataset.maxHp=String(u.maxHp??u.hp);b.dataset.frozen=String(!!u.frozen);
   const tags=[u.haste?'⚡ 速攻':'',u.guard?'🛡️ 守護':''].filter(Boolean).join('　'),status=u.frozen?'拘束中':u.fresh&&!u.haste?'召喚したターン':u.tapped?'攻撃済み':'';
@@ -2842,6 +2861,18 @@ render();
   max-width:clamp(112px,14vw,134px)!important
  }
 }
+</style>
+
+
+<style>
+#starfall-cpu #hand .card.dragging{opacity:.48;filter:brightness(.8)}
+#starfall-cpu #game #you-field.dnd-drop-target{
+ outline:3px solid #ffe27a!important;
+ outline-offset:-5px!important;
+ box-shadow:inset 0 0 0 999px #ffe27a16,inset 0 0 26px #ffc84f77!important
+}
+#starfall-cpu #hand .card{cursor:grab}
+#starfall-cpu #hand .card:active{cursor:grabbing}
 </style>
 
 </body>
