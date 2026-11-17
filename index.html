@@ -2651,6 +2651,44 @@ render();
  #starfall-cpu #game .material-card .material-ability{flex-basis:clamp(15px,2.5vh,20px);height:clamp(15px,2.5vh,20px);min-height:clamp(15px,2.5vh,20px);max-height:clamp(15px,2.5vh,20px);font-size:7px;padding:2px}
  #starfall-cpu #game .material-card .material-stats{height:18px;min-height:18px;font-size:10px}
 }
+
+/* Use the battlefield's full row for cards instead of leaving a large dark strip below them */
+#starfall-cpu #game>.zone.enemy,#starfall-cpu #game>.zone:not(.enemy){
+ box-sizing:border-box!important;height:auto!important;min-height:0!important;max-height:none!important;
+ align-self:stretch!important;margin:0!important;padding-bottom:4px!important
+}
+#starfall-cpu #game #cpu-field,#starfall-cpu #game #you-field{
+ box-sizing:border-box!important;flex:0 0 auto!important;
+ height:var(--battlefield-height,clamp(120px,24vh,200px))!important;
+ min-height:var(--battlefield-height,clamp(120px,24vh,200px))!important;
+ max-height:var(--battlefield-height,clamp(120px,24vh,200px))!important;
+ padding-top:0!important;padding-bottom:0!important;align-items:center!important;align-content:center!important
+}
+#starfall-cpu #game .material-card{
+ box-sizing:border-box!important;flex-shrink:0!important;
+ height:clamp(100px,calc(var(--battlefield-height,200px) - 12px),240px)!important;
+ min-height:clamp(100px,calc(var(--battlefield-height,200px) - 12px),240px)!important;
+ max-height:clamp(100px,calc(var(--battlefield-height,200px) - 12px),240px)!important
+}
+@media(min-width:1000px){
+ #starfall-cpu #game:not(.coin-pending){
+  grid-template-rows:auto auto minmax(180px,1fr) auto!important;
+  grid-template-areas:"enemy enemy log" "own own log" "hand mulligan log" "hint hint log"!important
+ }
+}
+@media(min-width:561px) and (max-width:999px){
+ #starfall-cpu #game{--battlefield-height:clamp(150px,25vh,220px)!important}
+}
+@media(max-width:560px){
+ #starfall-cpu #game{--battlefield-height:clamp(120px,24dvh,160px)!important}
+ #starfall-cpu #game>.zone.enemy,#starfall-cpu #game>.zone:not(.enemy){padding-top:3px!important;padding-bottom:3px!important}
+ #starfall-cpu #game .material-card{padding:3px!important;gap:1px!important}
+ #starfall-cpu #game .material-card .material-art{height:clamp(20px,4vh,30px)!important;min-height:clamp(20px,4vh,30px)!important;font-size:24px!important}
+ #starfall-cpu #game .material-card .material-name{font-size:10px!important}
+ #starfall-cpu #game .material-card .material-keywords{min-height:10px!important;font-size:8px!important}
+ #starfall-cpu #game .material-card .material-ability{flex-basis:clamp(16px,3vh,22px)!important;height:clamp(16px,3vh,22px)!important;min-height:clamp(16px,3vh,22px)!important;max-height:clamp(16px,3vh,22px)!important;font-size:7px!important}
+ #starfall-cpu #game .material-card .material-stats{height:18px!important;min-height:18px!important;font-size:10px!important}
+}
 </style>
 </body>
 </html>
