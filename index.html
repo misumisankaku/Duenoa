@@ -2709,6 +2709,50 @@ render();
  #starfall-cpu #game{--battlefield-height:clamp(175px,23vh,215px)!important}
 }
 </style>
+
+<style>
+/* Balance the play screen: let the two battlefields use spare height, keep hand and mulligan rows content-sized. */
+@media (min-width:1000px) and (min-height:681px){
+ #starfall-cpu #game:not(.coin-pending){
+  grid-template-rows:minmax(min-content,1fr) minmax(min-content,1fr) auto auto!important;
+  grid-template-areas:"enemy enemy log" "own own log" "hand mulligan log" "hint hint log"!important;
+  align-content:stretch!important;
+  align-items:stretch!important
+ }
+ #starfall-cpu #game:not(.coin-pending)>.zone.enemy,
+ #starfall-cpu #game:not(.coin-pending)>.zone:not(.enemy){
+  display:flex!important;
+  flex-direction:column!important;
+  box-sizing:border-box!important;
+  height:100%!important;
+  min-height:0!important;
+  align-self:stretch!important
+ }
+ #starfall-cpu #game:not(.coin-pending)>.zone>.person{flex:0 0 auto!important}
+ #starfall-cpu #game:not(.coin-pending) #cpu-field,
+ #starfall-cpu #game:not(.coin-pending) #you-field{
+  box-sizing:border-box!important;
+  flex:1 1 auto!important;
+  height:auto!important;
+  min-height:var(--battlefield-height,clamp(120px,24vh,200px))!important;
+  max-height:none!important;
+  align-items:center!important;
+  align-content:center!important;
+  justify-content:center!important
+ }
+ #starfall-cpu #game:not(.coin-pending)>.hand{
+  height:auto!important;
+  min-height:var(--hand-mulligan-height)!important;
+  max-height:none!important;
+  align-self:stretch!important
+ }
+ #starfall-cpu #game:not(.coin-pending)>.mulligan-controls:not([hidden]){
+  align-self:center!important;
+  margin-top:0!important
+ }
+}
+</style>
+
 </body>
 </html>
 
