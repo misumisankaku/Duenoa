@@ -2544,8 +2544,8 @@ function makeRoom(){
   tryCreateRoom();
 }
 function joinRoom(){NET.remoteDeckList=null;NET.pendingFirst=null;NET.spectating=false;syncPlayerNames();getAudioContext();if(typeof Peer==='undefined'){onlineStatus('通信ライブラリを読み込めません。インターネット接続を確認してください。');return;}const room=el('#room-code').value.trim();if(!/^\d{4}$/.test(room)){onlineStatus('部屋コードは4桁の数字で入力してください。');return;}NET.role='guest';NET.active=false;NET.localReady=false;NET.remoteReady=false;NET.peer=new Peer();onlineStatus('部屋に接続しています…');updateOnlineControls();NET.peer.on('open',()=>attachOnlineConnection(NET.peer.connect(room,{reliable:true}),'guest'));NET.peer.on('error',err=>onlineStatus('接続できませんでした：'+(err.type||'通信エラー')+'。コードを確認してください。'));}
-const MATCHMAKING_API_URL=location.hostname.endsWith('.vercel.app')?'/api/matchmaking':'https://my-gamma-lyart.vercel.app/api/matchmaking';
-const PLAYER_METRIC_API_URL=location.hostname.endsWith('.vercel.app')?'/api/player-metric':'https://my-gamma-lyart.vercel.app/api/player-metric';
+const MATCHMAKING_API_URL=(location.hostname.endsWith('.github.io')||location.hostname==='localhost'||location.hostname==='127.0.0.1')?'https://my-gamma-lyart.vercel.app/api/matchmaking':'/api/matchmaking';
+const PLAYER_METRIC_API_URL=(location.hostname.endsWith('.github.io')||location.hostname==='localhost'||location.hostname==='127.0.0.1')?'https://my-gamma-lyart.vercel.app/api/player-metric':'/api/player-metric';
 const PLAYER_METRIC_ID_KEY='duenoa.metric-player-id.v1';
 function getAnonymousPlayerId(){
   try{

@@ -20,3 +20,7 @@
 - [PeerJS Cloud](https://peerjs.com/server/cloud)
 - [Vercel Storage](https://vercel.com/docs/marketplace-storage)
 - [Upstash Redis pricing](https://upstash.com/pricing/redis)
+
+## Cloudflare Pages
+
+Cloudflare Pagesへの移行用Functionsとビルド設定は [CLOUDFLARE_PAGES.md](CLOUDFLARE_PAGES.md) にあります。Cloudflare PagesのProduction環境には、Upstash Redisの接続変数と利用者数ページ用のパスワードを登録してください。移行完了までは現在のVercel環境を稼働状態にします。
